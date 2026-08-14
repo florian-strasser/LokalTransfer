@@ -235,14 +235,24 @@ const migrations: Migration[] = [
     //
     // `backgroundName` is a file inside the transfer's own storage directory, so
     // it is removed along with everything else when the transfer expires.
+    //
+    // Each column is added only if it is missing. The runner records a migration
+    // as applied *after* it succeeds, so a process killed between the ALTER and
+    // that record would re-run this on the next boot and fail on a duplicate
+    // column — permanently, since the instance can never get past it. Checking
+    // first makes a re-run a no-op instead.
     id: '0002_transfer_share_options',
     up: async (db) => {
-      await db.execute(
-        'ALTER TABLE `transfers`'
-        + ' ADD COLUMN `passwordHash` varchar(255) DEFAULT NULL,'
-        + ' ADD COLUMN `layout` enum(\'list\',\'gallery\') NOT NULL DEFAULT \'list\','
-        + ' ADD COLUMN `backgroundName` varchar(255) DEFAULT NULL'
-      )
+      const columns: [string, string][] = [
+        ['passwordHash', 'varchar(255) DEFAULT NULL'],
+        ['layout', 'enum(\'list\',\'gallery\') NOT NULL DEFAULT \'list\''],
+        ['backgroundName', 'varchar(255) DEFAULT NULL']
+      ]
+
+      for (const [name, definition] of columns) {
+        if (await columnExists(db, 'transfers', name)) continue
+        await db.execute(`ALTER TABLE \`transfers\` ADD COLUMN \`${name}\` ${definition}`)
+      }
     }
   },
 
@@ -292,8 +302,11 @@ const migrations: Migration[] = [
     // Writing it is what makes the warning fire exactly once — the sweep runs
     // every 15 minutes and would otherwise re-send on each pass for the whole
     // length of the warning window.
+    // Added conditionally, for the same reason as 0002: a re-run after an
+    // interrupted boot must be a no-op rather than a permanent failure.
     id: '0004_expiry_warning',
     up: async (db) => {
+      if (await columnExists(db, 'transfers', 'expiryWarningSentAt')) return
       await db.execute(
         'ALTER TABLE `transfers` ADD COLUMN `expiryWarningSentAt` timestamp NULL DEFAULT NULL'
       )
@@ -322,30 +335,76 @@ export function schemaReady(): Promise<void> {
   return schemaPromise
 }
 
+// Name of the advisory lock that serialises migration runs. Scoped to the
+// database by MySQL itself — `GET_LOCK` names are server-wide, so the database
+// name is included to keep two instances on one server out of each other's way.
+const MIGRATION_LOCK = 'lokaltransfer_migrations'
+
+// How long to wait for another process to finish migrating before giving up.
+// Generous, because the wait is for someone else's ALTER TABLE on what may be a
+// large table, and failing early would only crash-loop the container.
+const MIGRATION_LOCK_TIMEOUT_SECONDS = 120
+
 /**
  * Apply any migrations that haven't run yet, in order.
  *
  * Ids are recorded in `_migrations` after the migration succeeds, so this is
- * safe to call on every boot. Prefer `schemaReady()` — it deduplicates.
+ * safe to call on every boot. Prefer `schemaReady()` — it deduplicates within a
+ * process.
+ *
+ * Across processes it is serialised with a MySQL advisory lock. Without one,
+ * two processes starting against the same fresh database both read an empty
+ * `_migrations`, both decide the same migration is outstanding, and the second
+ * one's `ALTER TABLE` fails with a duplicate column. That is not hypothetical:
+ * it is what CI hit on its first run, where the database really was new — and it
+ * would equally hit a rolling deploy or a second replica, since nothing stops
+ * two containers booting at once.
+ *
+ * The lock is held on its own pooled connection because `GET_LOCK` is scoped to
+ * a connection, and the migrations themselves run through the pool, which hands
+ * out whichever connection is free.
  */
 export async function runMigrations() {
   const db = setupDatabase()
 
-  await db.execute(`CREATE TABLE IF NOT EXISTS \`_migrations\` (
-    \`id\` varchar(255) NOT NULL,
-    \`appliedAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (\`id\`)
-  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;`)
+  const lock = await db.getConnection()
+  try {
+    const [rows] = await lock.query<RowDataPacket[]>(
+      'SELECT GET_LOCK(?, ?) AS acquired',
+      [MIGRATION_LOCK, MIGRATION_LOCK_TIMEOUT_SECONDS]
+    )
 
-  const [applied] = await db.execute<RowDataPacket[]>('SELECT `id` FROM `_migrations`')
-  const done = new Set(applied.map((row: RowDataPacket) => row.id))
+    // 0 means the wait timed out; NULL means the attempt itself errored.
+    if (Number(rows[0]?.acquired) !== 1) {
+      throw new Error(
+        `Timed out waiting ${MIGRATION_LOCK_TIMEOUT_SECONDS}s for another process to finish migrating`
+      )
+    }
 
-  for (const migration of migrations) {
-    if (done.has(migration.id)) continue
+    await db.execute(`CREATE TABLE IF NOT EXISTS \`_migrations\` (
+      \`id\` varchar(255) NOT NULL,
+      \`appliedAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      PRIMARY KEY (\`id\`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;`)
 
-    logger.info('Applying migration', { id: migration.id })
-    await migration.up(db)
-    await db.execute('INSERT INTO `_migrations` (`id`) VALUES (?)', [migration.id])
+    // Read *after* the lock is held. Reading before would reintroduce exactly
+    // the stale view the lock exists to prevent.
+    const [applied] = await db.execute<RowDataPacket[]>('SELECT `id` FROM `_migrations`')
+    const done = new Set(applied.map((row: RowDataPacket) => row.id))
+
+    for (const migration of migrations) {
+      if (done.has(migration.id)) continue
+
+      logger.info('Applying migration', { id: migration.id })
+      await migration.up(db)
+      await db.execute('INSERT INTO `_migrations` (`id`) VALUES (?)', [migration.id])
+    }
+  } finally {
+    // Released explicitly rather than left to the connection closing, since the
+    // connection goes back to the pool alive and would hold the lock for the
+    // life of the process.
+    await lock.query('SELECT RELEASE_LOCK(?)', [MIGRATION_LOCK]).catch(() => {})
+    lock.release()
   }
 }
 

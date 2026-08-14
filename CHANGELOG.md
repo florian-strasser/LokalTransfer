@@ -1,5 +1,35 @@
 # Changelog
 
+## Unreleased
+
+### Fixes
+
+- **Two processes migrating one database at the same time corrupted the run.**
+  `runMigrations` read `_migrations`, decided what was outstanding, and applied
+  it — with nothing serialising that between processes. Two starting against the
+  same fresh database both saw an empty table, both decided the same migration
+  was outstanding, and the second one's `ALTER TABLE` failed with a duplicate
+  column.
+
+  Found by CI on its very first run, where the database genuinely was new; every
+  local run had migrated long ago, so the window never opened here. It was not a
+  test-only fault — a rolling deploy or a second replica would hit it just as
+  hard, and the published image would have carried it.
+
+  Migration runs are now serialised with a MySQL advisory lock, held on its own
+  pooled connection because `GET_LOCK` is per-connection while the migrations run
+  through the pool. The applied-list is read *after* the lock is taken; reading
+  before would reintroduce the stale view the lock exists to prevent. Verified
+  both ways with eight concurrent migrators against a brand-new database: 7 of 8
+  fail without the lock, 0 of 8 with it.
+
+- **An interrupted migration could brick an instance permanently.** The runner
+  records a migration as applied only after it succeeds, so a process killed
+  between an `ALTER TABLE` and that record would re-run the same `ALTER` on the
+  next boot and fail on a duplicate column — for ever, since startup could never
+  get past it. The two column-adding migrations now check for the column first,
+  making a re-run a no-op. The lock does not help here; this is a separate hole.
+
 ## v0.1.0
 
 The first release. A self-hosted WeTransfer alternative: send files to clients,
