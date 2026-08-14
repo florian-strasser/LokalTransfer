@@ -67,13 +67,9 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      # Keeps the Docker Hub page from being an empty box. Without this the only
-      # description there is whatever was typed into the web form once.
-      - name: Update the Docker Hub description
-        uses: peter-evans/dockerhub-description@v5
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-          repository: ${{ env.IMAGE }}
-          short-description: 'Self-hosted file transfer with expiring links, a REST API and an MCP server'
-          readme-filepath: ./README.md
+      # There is deliberately no step here syncing the README to Docker Hub's
+      # description. That endpoint refuses personal access tokens — it only
+      # accepts the account password — so automating it would mean putting a
+      # credential with full account access into CI in exchange for keeping a
+      # cosmetic field up to date. The description is set once by hand in the
+      # Docker Hub UI instead.
