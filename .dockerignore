@@ -1,0 +1,27 @@
+# Only the sources needed to build should reach the daemon: everything below is
+# either rebuilt inside the image, useless there, or must never be baked into a
+# published layer.
+
+node_modules
+.output
+.nuxt
+.data
+
+# Secrets. `.env` in particular would otherwise end up in a public image.
+.env
+.env.*
+!.env.example
+
+# Uploaded files and the test suite's scratch space — both are large and local.
+storage
+.test-storage
+
+.git
+.github
+.vscode
+.idea
+.DS_Store
+*.log
+logs
+coverage
+test

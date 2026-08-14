@@ -1,0 +1,97 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+/* The palette is intentionally two-dimensional: a neutral ramp (white through
+ * greys to black) plus exactly one accent. Both ramps are generated at runtime
+ * from NUXT_PUBLIC_COLOR_* and injected as `--ui-color-*` custom properties by
+ * app/plugins/theme.ts, so nothing is baked in here.
+ *
+ * Nuxt UI also ships secondary/success/info/warning/error as separate colours.
+ * They're aliased onto the accent in app.config.ts, which leaves the app with
+ * one accent everywhere — including alerts and validation — as intended. */
+
+@theme static {
+  /* Inter everywhere. @nuxt/fonts (already active via Nuxt UI) sees this
+   * family name, downloads the files at build time and serves them from
+   * /_fonts — so nothing is fetched from Google at runtime, which a
+   * self-hosted tool in an EU company needs.
+   * The system stack stays behind it as the fallback while the font loads and
+   * if it ever fails to. */
+  --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+
+  /* Fallback ramps for the two palettes, generated from the default hexes
+   * (#CC0030 and #71717A) by the same code that runs at runtime. They only show
+   * if the theme plugin hasn't run — the plugin renders during SSR, so in
+   * practice these just keep the stylesheet valid on its own. Lightness values
+   * track Tailwind 4's ramps step for step, because Nuxt UI assumes them when it
+   * picks shades for backgrounds, borders and text. */
+  --color-brand-50: oklch(98.50% 0.0185 21.19);
+  --color-brand-100: oklch(96.92% 0.0352 21.19);
+  --color-brand-200: oklch(91.88% 0.0664 21.19);
+  --color-brand-300: oklch(86.41% 0.1053 21.19);
+  --color-brand-400: oklch(69.39% 0.1582 21.19);
+  --color-brand-500: oklch(53.42% 0.2149 21.19);
+  --color-brand-600: oklch(42.34% 0.2411 21.19);
+  --color-brand-700: oklch(35.90% 0.2319 21.19);
+  --color-brand-800: oklch(26.24% 0.1960 21.19);
+  --color-brand-900: oklch(20.18% 0.1536 21.19);
+  --color-brand-950: oklch(14.50% 0.1059 21.19);
+
+  --color-greyscale-50: oklch(98.50% 0.0010 285.94);
+  --color-greyscale-100: oklch(96.98% 0.0020 285.94);
+  --color-greyscale-200: oklch(92.14% 0.0037 285.94);
+  --color-greyscale-300: oklch(86.88% 0.0059 285.94);
+  --color-greyscale-400: oklch(70.52% 0.0088 285.94);
+  --color-greyscale-500: oklch(55.17% 0.0120 285.94);
+  --color-greyscale-600: oklch(43.59% 0.0120 285.94);
+  --color-greyscale-700: oklch(36.86% 0.0120 285.94);
+  --color-greyscale-800: oklch(26.77% 0.0109 285.94);
+  --color-greyscale-900: oklch(20.44% 0.0086 285.94);
+  --color-greyscale-950: oklch(14.50% 0.0059 285.94);
+}
+
+/* Render native UI (scrollbars, file pickers, focus rings) to match the active
+ * theme rather than always drawing the light-mode versions. */
+:root {
+  color-scheme: light dark;
+}
+
+/* --- Surfaces, matching LokalBoards -----------------------------------------
+ *
+ * The palette is a grey page with white tiles sitting on it, which is one step
+ * away from how Nuxt UI ships: there, `--ui-bg` is both the page and the card,
+ * so everything is flat white. Cards (`UCard`, and the hand-built panels in the
+ * composer and download page) all resolve to `bg-default`, i.e. `--ui-bg` — so
+ * that token has to stay the *tile* colour, and the page gets its own
+ * background on <body> instead. That is exactly the structure LokalBoards uses.
+ *
+ * These are fixed brand values rather than derived from the neutral ramp: they
+ * are specific Apple-family greys, and approximating them from a generated ramp
+ * drifted noticeably. The ramp still drives borders, muted text and hover fills.
+ *
+ * The declarations are unlayered so they beat Nuxt UI's own `@layer theme`
+ * definitions of the same tokens, and the `body` rule beats the `@layer base`
+ * `bg-default` Nuxt UI applies to it. */
+:root {
+  --lt-page: #f5f5f7;
+  --ui-bg: #ffffff;
+  --ui-text: #4e4e52;
+}
+
+.dark {
+  --lt-page: #1c1c1e;
+  --ui-bg: #2c2c2e;
+  --ui-text: #aeaeb2;
+}
+
+body {
+  background-color: var(--lt-page);
+}
+
+/* The upload dropzone is the one place with a custom hit area large enough that
+ * the browser's default drag feedback isn't enough to tell you it's active. */
+.dropzone-active {
+  border-color: var(--ui-primary);
+  background-color: var(--ui-bg-elevated);
+}

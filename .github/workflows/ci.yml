@@ -1,0 +1,81 @@
+name: ci
+
+on: push
+
+jobs:
+  ci:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        node: [22]
+
+    # The suite needs a real MySQL 8: the schema uses a MySQL-8 collation, and
+    # the sweep tests assert on what the server actually did to the rows.
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: root1234
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Install node
+        uses: actions/setup-node@v7
+        with:
+          node-version: ${{ matrix.node }}
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Lint
+        run: pnpm run lint
+
+      - name: Typecheck
+        run: pnpm run typecheck
+
+      - name: Test
+        env:
+          NUXT_TEST_MYSQL_HOST: 127.0.0.1
+          NUXT_TEST_MYSQL_USER: root
+          NUXT_TEST_MYSQL_PASSWORD: root1234
+        run: pnpm run test
+
+      - name: Build
+        run: pnpm run build
+
+  docker:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      # Build only, no push — this catches a broken Dockerfile or entrypoint on
+      # every commit, while publishing stays tied to a release tag.
+      - name: Build the image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          push: false
+          platforms: linux/amd64
+          tags: lokaltransfer:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
