@@ -1,5 +1,34 @@
 # Changelog
 
+## v0.1.4
+
+### Security
+
+- **`create-admin` no longer prints a generated password into captured output.**
+  It has to reach the operator somehow and the console is the only channel the
+  script has, but the same line also wrote the administrator's password into a CI
+  log, a `| tee setup.log`, or whatever captures `docker compose up` — files that
+  outlive the run and are rarely treated as secrets. It now prints only to an
+  interactive terminal, and otherwise says so and points at the third argument.
+  Found by CodeQL (`js/clear-text-logging`).
+
+- **Both workflows declare `permissions: contents: read`.** Without an explicit
+  block, `GITHUB_TOKEN` inherits the repository default, which on older
+  repositories is read-write — far more than linting, testing or pushing to
+  Docker Hub with separate credentials needs. Found by CodeQL
+  (`actions/missing-workflow-permissions`).
+
+### Notes
+
+- **CodeQL's `js/insufficient-password-hash` on `hashApiKey` is a false
+  positive**, and the code is deliberately unchanged. The rule fires on a fast
+  hash reaching what it takes to be a password; the input here is 32 bytes from
+  the CSPRNG, so there is nothing to brute-force and bcrypt would be actively
+  worse — its cost only buys something against guessable secrets, and its
+  per-row salt would make verification a scan over every stored key instead of
+  an indexed lookup. Suppressed at the call with a comment rather than dismissed
+  silently, so the reasoning is where the next reader looks.
+
 ## v0.1.3
 
 ### Security

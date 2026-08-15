@@ -130,9 +130,24 @@ try {
   console.log('\nAdministrator created.\n')
   console.log(`  E-mail:   ${normalized}`)
   if (!providedPassword) {
-    // Printed once and never stored anywhere in plaintext.
-    console.log(`  Password: ${password}`)
-    console.log('\nWrite this down now — it is not recoverable.\n')
+    // Only ever printed to an interactive terminal.
+    //
+    // A generated password has to reach the operator somehow, and the console is
+    // the only channel this script has. But when the output is redirected — a CI
+    // job, `| tee setup.log`, `docker compose up` capturing container output —
+    // the same line writes the administrator's password into a file that
+    // outlives the run and is rarely treated as a secret. A TTY check keeps the
+    // interactive case exactly as it was and refuses the case that leaks.
+    if (process.stdout.isTTY) {
+      console.log(`  Password: ${password}`)
+      console.log('\nWrite this down now — it is not recoverable.\n')
+    } else {
+      console.log('  Password: (generated, not printed — output is not a terminal)')
+      console.log(
+        '\nRe-run this in a terminal, or pass a password as the third argument,'
+        + '\nso it is not written into whatever is capturing this output.\n'
+      )
+    }
   }
 } catch (error) {
   console.error('Failed to create the administrator:', error.message)

@@ -2,6 +2,13 @@ name: ci
 
 on: push
 
+# Least privilege for GITHUB_TOKEN. Without this it inherits the repository
+# default, which on older repositories is read-write — far more than any job here
+# needs. Nothing in this workflow writes to the repository: it lints, typechecks,
+# tests and builds, and the Docker step below builds without pushing.
+permissions:
+  contents: read
+
 jobs:
   ci:
     runs-on: ${{ matrix.os }}

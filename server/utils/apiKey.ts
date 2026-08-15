@@ -13,8 +13,12 @@ import { createHash, randomBytes } from 'node:crypto'
 // verification could not use an index: the server would have to bcrypt the
 // presented key against every stored row in turn.
 //
-// Static analysis sometimes flags this as an insufficient password hash. It is a
-// false positive for this input; the reasoning above is the answer.
+// CodeQL flags this as `js/insufficient-password-hash`. The rule fires on any
+// fast hash reaching something it has decided is a password; here the input is
+// `generateApiKey()` — 32 bytes from the CSPRNG — so the premise the rule tests
+// for does not hold. Suppressed at the call rather than silently, so the next
+// person to read the alert finds the reasoning instead of an unexplained
+// dismissal.
 
 /** The token handed to the caller. 32 bytes of entropy, hex encoded. */
 export function generateApiKey(): string {
@@ -22,6 +26,7 @@ export function generateApiKey(): string {
 }
 
 export function hashApiKey(key: string): string {
+  // codeql[js/insufficient-password-hash]
   return createHash('sha256').update(key, 'utf8').digest('hex')
 }
 

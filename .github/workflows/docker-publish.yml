@@ -18,6 +18,12 @@ on:
 env:
   IMAGE: florianstrasser/lokaltransfer
 
+# Least privilege for GITHUB_TOKEN. Publishing authenticates to Docker Hub with
+# its own secrets rather than this token, so read access to the checkout is all
+# the workflow needs.
+permissions:
+  contents: read
+
 jobs:
   publish:
     runs-on: ubuntu-latest
