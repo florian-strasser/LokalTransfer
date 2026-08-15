@@ -4,13 +4,26 @@
 // Two sources, in order: a per-transfer image the sender uploaded, else the
 // instance default from NUXT_PUBLIC_BACKGROUND_IMAGE. With neither, the page
 // falls back to the plain themed background and nothing here renders.
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   /**
    * A transfer's own background URL, when the page has one. Takes precedence
    * over the instance default.
    */
   src?: string | null
-}>()
+  /**
+   * Whether to wash the image out to protect text sitting *outside* the panels.
+   *
+   * On by default, because most pages using this have some: the composer has a
+   * heading and the nav above its widget, sign-in has the no-sign-up line below
+   * its card. The download page has none — it is chrome-free and the expiry
+   * moved inside the card — so it turns this off and shows the photograph as it
+   * actually is, which is the whole reason a sender picks one.
+   */
+  scrim?: boolean
+}>(), {
+  src: null,
+  scrim: true
+})
 
 const config = useRuntimeConfig().public
 
@@ -38,15 +51,18 @@ const credit = computed(() =>
       decoding="async"
     >
     <!-- A photo can be light or dark anywhere, so legibility can't depend on it.
-         The panels themselves are translucent-but-blurred, which carries most of
-         the contrast; this only has to protect the loose text outside them — the
-         app name at the top and the expiry line at the bottom. Hence a light
-         overall wash plus a stronger gradient at the edges, rather than one
-         heavy scrim that would flatten the image into grey. -->
-    <div class="absolute inset-0 bg-white/25 dark:bg-black/45" />
-    <div
-      class="absolute inset-0 bg-gradient-to-b from-white/60 via-transparent to-white/60 dark:from-black/70 dark:via-transparent dark:to-black/70"
-    />
+         The panels carry their own opaque surface, so this only protects text
+         loose on the page. A light overall wash plus a stronger gradient at the
+         edges, rather than one heavy scrim that would flatten the image to grey —
+         and skipped entirely where there is no such text, since washing out a
+         photograph nobody needs to read through only hides what the sender chose
+         it for. -->
+    <template v-if="scrim">
+      <div class="absolute inset-0 bg-white/25 dark:bg-black/45" />
+      <div
+        class="absolute inset-0 bg-gradient-to-b from-white/60 via-transparent to-white/60 dark:from-black/70 dark:via-transparent dark:to-black/70"
+      />
+    </template>
   </div>
 
   <!-- Credit sits outside the aria-hidden layer and re-enables pointer events,

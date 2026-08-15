@@ -17,18 +17,6 @@ const props = defineProps<{
   mode: 'member' | 'guest'
 }>()
 
-const emit = defineEmits<{
-  /**
-   * The sender's chosen background, as an object URL (or null when cleared), so
-   * the page behind this panel can show what the recipient will actually see.
-   *
-   * An event rather than `defineExpose`: this component's setup awaits, and Vue
-   * ignores an expose registered after an await — the parent's template ref
-   * would silently be empty.
-   */
-  'background-change': [url: string | null]
-}>()
-
 const { t } = useI18n()
 const { formatBytes, formatDateTime } = useFormat()
 const config = useRuntimeConfig().public
@@ -91,34 +79,11 @@ const showOptions = ref(false)
 
 const password = ref('')
 const layout = ref<'list' | 'gallery'>('list')
+// The chosen background belongs to the transfer, not to this page: it is shown
+// to the recipient on the download page and nowhere else. Painting it behind the
+// composer as a live preview turned the sender's own form into whatever image
+// they picked, which made the widget unreadable over a busy photograph.
 const background = ref<File | null>(null)
-const backgroundInput = ref<HTMLInputElement | null>(null)
-
-// Object URL so the chosen image can be previewed before it is ever uploaded.
-const backgroundPreview = ref<string | null>(null)
-
-function chooseBackground(event: Event) {
-  const file = (event.target as HTMLInputElement).files?.[0]
-  if (!file) return
-
-  if (backgroundPreview.value) URL.revokeObjectURL(backgroundPreview.value)
-  background.value = file
-  backgroundPreview.value = URL.createObjectURL(file)
-  emit('background-change', backgroundPreview.value)
-}
-
-function clearBackground() {
-  if (backgroundPreview.value) URL.revokeObjectURL(backgroundPreview.value)
-  background.value = null
-  backgroundPreview.value = null
-  if (backgroundInput.value) backgroundInput.value.value = ''
-  emit('background-change', null)
-}
-
-// Object URLs are held by the document until revoked, so release on teardown.
-onBeforeUnmount(() => {
-  if (backgroundPreview.value) URL.revokeObjectURL(backgroundPreview.value)
-})
 
 // Mirrors RETENTION_OPTIONS on the server; 0 is the unlimited option.
 const retentionOptions = computed(() =>
@@ -197,7 +162,7 @@ function startAnother() {
   selectedMembers.value = []
   password.value = ''
   layout.value = 'list'
-  clearBackground()
+  background.value = null
   showOptions.value = false
 }
 
@@ -479,39 +444,13 @@ const progressLabel = computed(() => {
           :label="t('compose.background')"
           :description="t('compose.backgroundHint')"
         >
-          <div class="flex items-center gap-3">
-            <img
-              v-if="backgroundPreview"
-              :src="backgroundPreview"
-              alt=""
-              class="size-12 shrink-0 rounded-md object-cover"
-            >
-            <UButton
-              :label="background ? t('compose.backgroundChange') : t('compose.backgroundChoose')"
-              icon="i-lucide-image"
-              color="neutral"
-              variant="subtle"
-              size="sm"
-              :disabled="upload.isBusy.value"
-              @click="backgroundInput?.click()"
-            />
-            <UButton
-              v-if="background"
-              icon="i-lucide-x"
-              color="neutral"
-              variant="ghost"
-              size="sm"
-              :aria-label="t('compose.backgroundRemove')"
-              @click="clearBackground"
-            />
-          </div>
-          <input
-            ref="backgroundInput"
-            type="file"
-            accept="image/png,image/jpeg,image/gif,image/webp,image/avif"
-            class="hidden"
-            @change="chooseBackground"
-          >
+          <ImageDropzone
+            v-model="background"
+            :label="t('compose.backgroundChoose')"
+            :hint="t('compose.backgroundDropHint')"
+            :remove-label="t('compose.backgroundRemove')"
+            :disabled="upload.isBusy.value"
+          />
         </UFormField>
       </div>
 

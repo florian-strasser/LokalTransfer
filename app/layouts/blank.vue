@@ -14,6 +14,33 @@ const config = useRuntimeConfig().public
 
 const privacyUrl = String(config.privacyUrl || '')
 const imprintUrl = String(config.imprintUrl || '')
+
+// A page can opt out of being centred with `definePageMeta({ align: 'left' })`
+// or `'right'`.
+//
+// The download page does, so its card sits against one edge and the background
+// image keeps the rest of the viewport — the reason the per-transfer background
+// exists at all. Sign-in and password recovery stay centred: they have no
+// background worth making room for, and a lone form pinned to one side just
+// looks unfinished.
+//
+// An aligned page sets its own width, since what fits depends on the content —
+// a file list wants a narrow column, a photo gallery does not. The layout only
+// supplies the vertical centring and which edge to hug.
+//
+// Cast because this key is our own addition to the route meta rather than one
+// Nuxt declares.
+const route = useRoute()
+const align = computed(() => (route.meta as { align?: string }).align)
+
+const wrapperClass = computed(() => {
+  if (align.value === 'left') return 'my-auto'
+  // `flex flex-col items-end` rather than `ml-auto` on the card: the page root
+  // wraps whichever of the three states is showing, so pushing it from here
+  // means each state doesn't have to remember to do it.
+  if (align.value === 'right') return 'my-auto flex flex-col items-end'
+  return 'm-auto max-w-3xl'
+})
 </script>
 
 <template>
@@ -27,8 +54,11 @@ const imprintUrl = String(config.imprintUrl || '')
          centring by justification clips the top of anything taller than the
          viewport (the download page with a long file list), while auto margins
          collapse and let it scroll normally. -->
-    <main class="flex flex-1 px-4 sm:px-6 py-8">
-      <div class="m-auto w-full max-w-3xl">
+    <main class="flex flex-1 px-4 py-8 sm:px-6 lg:px-10">
+      <div
+        class="w-full"
+        :class="wrapperClass"
+      >
         <slot />
       </div>
     </main>

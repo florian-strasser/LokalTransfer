@@ -5,7 +5,10 @@
 // Three states: not found / expired, locked behind a password, and unlocked. The
 // locked state is served the presentation shell only (layout, background), never
 // the file list — a list of filenames is often as revealing as the files.
-definePageMeta({ layout: 'blank' })
+// `align: 'right'` puts the card against the right edge instead of centring it,
+// leaving the rest of the viewport to the background image — the whole point of
+// the per-transfer background.
+definePageMeta({ layout: 'blank', align: 'right' })
 
 const { t } = useI18n()
 const route = useRoute()
@@ -98,13 +101,19 @@ const otherFiles = computed(() => files.value.filter(file => !file.isImage))
 </script>
 
 <template>
-  <div class="py-6 sm:py-10">
-    <AppBackground :src="backgroundSrc" />
+  <div>
+    <!-- No wash over the image: nothing on this page sits outside the card, so
+         there is no text to protect, and the sender picked the photograph to be
+         seen rather than faded to grey. -->
+    <AppBackground
+      :src="backgroundSrc"
+      :scrim="false"
+    />
 
     <!-- Not found / expired ------------------------------------------------ -->
     <div
       v-if="error || !transfer"
-      class="mx-auto max-w-md rounded-2xl border border-default bg-default/90 p-8 text-center shadow-xl backdrop-blur-md"
+      class="max-w-md rounded-2xl border border-default bg-default p-8 text-center shadow-xl"
     >
       <UIcon
         name="i-lucide-link-2-off"
@@ -121,7 +130,7 @@ const otherFiles = computed(() => files.value.filter(file => !file.isImage))
     <!-- Locked -------------------------------------------------------------- -->
     <div
       v-else-if="transfer.locked"
-      class="mx-auto max-w-sm rounded-2xl border border-default bg-default/90 p-8 shadow-xl backdrop-blur-md"
+      class="max-w-sm rounded-2xl border border-default bg-default p-8 shadow-xl"
     >
       <div class="text-center">
         <UIcon
@@ -170,11 +179,28 @@ const otherFiles = computed(() => files.value.filter(file => !file.isImage))
     <!-- Unlocked ------------------------------------------------------------ -->
     <div
       v-else
-      class="mx-auto"
       :class="isGallery ? 'max-w-5xl' : 'max-w-xl'"
     >
-      <div class="rounded-2xl border border-default bg-default/90 shadow-xl backdrop-blur-md">
+      <div class="rounded-2xl border border-default bg-default shadow-xl">
         <div class="space-y-4 p-6 sm:p-8">
+          <!-- Inside the card and above the title. It used to sit underneath on
+               the page itself, where it was unreadable the moment the sender
+               configured a dark background — and no fixed text colour survives
+               an arbitrary photograph. Leading with it also puts the deadline
+               first, which is the thing a recipient has to act on. -->
+          <p class="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
+            <UIcon
+              name="i-lucide-clock"
+              class="size-4 shrink-0"
+            />
+            <template v-if="transfer.expiresAt">
+              {{ t('download.expires', { date: formatDateTime(transfer.expiresAt) }) }}
+            </template>
+            <template v-else>
+              {{ t('download.expiresNever') }}
+            </template>
+          </p>
+
           <div>
             <h1 class="text-2xl font-semibold text-highlighted">
               {{ transfer.subject || t('download.title') }}
@@ -296,15 +322,6 @@ const otherFiles = computed(() => files.value.filter(file => !file.isImage))
           </ul>
         </div>
       </div>
-
-      <p class="mt-4 text-center text-sm text-muted">
-        <template v-if="transfer.expiresAt">
-          {{ t('download.expires', { date: formatDateTime(transfer.expiresAt) }) }}
-        </template>
-        <template v-else>
-          {{ t('download.expiresNever') }}
-        </template>
-      </p>
     </div>
   </div>
 </template>

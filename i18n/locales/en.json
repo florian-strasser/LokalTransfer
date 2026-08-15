@@ -149,6 +149,7 @@
     "layoutGallery": "Gallery",
     "background": "Background image",
     "backgroundHint": "Shown behind the download page. Overrides the default.",
+    "backgroundDropHint": "PNG, JPEG, GIF, WebP or AVIF",
     "backgroundChoose": "Choose image",
     "backgroundChange": "Change image",
     "backgroundRemove": "Remove background"

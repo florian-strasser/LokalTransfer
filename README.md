@@ -1,11 +1,18 @@
 # LokalTransfer
+[![Nuxt](https://img.shields.io/github/package-json/dependency-version/florian-strasser/LokalTransfer/nuxt?label=Nuxt&logo=nuxt&color=00DC82&style=flat)](https://nuxt.com)
+[![MySQL](https://img.shields.io/badge/MySQL-8-4479A1?logo=mysql&logoColor=white&style=flat)](https://www.mysql.com)
+[![Docker](https://img.shields.io/docker/v/florianstrasser/lokaltransfer?label=Docker&logo=docker&color=2496ED&sort=semver&style=flat)](https://hub.docker.com/r/florianstrasser/lokaltransfer)
+[![License](https://img.shields.io/badge/license-MIT-blue)](https://github.com/florian-strasser/LokalTransfer/blob/master/LICENSE)
+[![Version](https://img.shields.io/github/package-json/v/florian-strasser/LokalTransfer?label=version&color=orange)](https://github.com/florian-strasser/LokalTransfer/releases)
+
+![LokalTransfer](https://raw.githubusercontent.com/florian-strasser/LokalTransfer/refs/heads/master/docs/readme-screenshot.webp)
 
 A self-hosted WeTransfer alternative. Send files to clients, and let them send
 files back — without either side needing a third-party service.
 
 Built with Nuxt 4, Nuxt UI and MySQL. The authentication, API conventions,
 migration runner and mail layer follow the same patterns as
-[LokalBoards](../LokalBoards).
+[LokalBoards](https://github.com/florian-strasser/LokalBoards).
 
 ## What it does
 

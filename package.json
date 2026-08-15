@@ -13,7 +13,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:unit": "vitest run test/unit test/integration",
-    "create-admin": "node scripts/create-admin.mjs"
+    "create-admin": "node scripts/create-admin.mjs",
+    "demo:screenshots": "bash scripts/demo/run.sh"
   },
   "dependencies": {
     "@iconify-json/lucide": "^1.2.121",
@@ -34,6 +35,7 @@
   "devDependencies": {
     "@nuxt/eslint": "^1.16.0",
     "@nuxt/test-utils": "^4.1.0",
+    "@playwright/test": "^1.62.1",
     "@types/archiver": "^8.0.0",
     "@types/busboy": "^1.5.4",
     "@types/nodemailer": "^8.0.1",

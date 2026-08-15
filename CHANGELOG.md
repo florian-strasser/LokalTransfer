@@ -1,6 +1,68 @@
 # Changelog
 
-## Unreleased
+## v0.1.2
+
+### Fixes
+
+- **`NUXT_LANGUAGE` did not change the interface language.** The locale lives in
+  runtimeConfig twice — `language` for the server, which renders outbound mail
+  with no browser involved, and `public.language` for the interface — and Nuxt
+  maps an environment variable to exactly one of them. `NUXT_LANGUAGE` reached
+  only the first, so an instance configured for German sent German mail and
+  served an English interface, and setting the documented variable could never
+  fix it.
+
+  Worst in Docker, which is how this app is meant to run: the image is built once
+  with the defaults baked in and configured purely through the environment, so
+  there was no build-time escape hatch either.
+
+  The locale is now resolved on the server and carried to the browser in the
+  payload, collapsing the two back into one knob. Mutating `public` from a Nitro
+  plugin is not the way out — it is frozen in production and assigning to it
+  crashes the server on boot, which is what the first attempt did.
+
+### Improvements
+
+- **The download page puts its card against one edge**, instead of centring it —
+  which leaves the rest of the viewport to the background image and gives the
+  per-transfer background something to do. Opt-in per page
+  (`definePageMeta({ align: 'right' })`), so sign-in and password recovery stay
+  centred: they have no background to make room for, and a lone form pinned to
+  one side just looks unfinished.
+
+  The background is also shown unwashed there. The overlay exists to keep text
+  *outside* the panels legible over an arbitrary photograph — but the download
+  page is chrome-free and the expiry moved inside the card, so there is no such
+  text left, and fading the image only hid what the sender chose it for. Pages
+  that do have loose text over the background keep the wash.
+
+  The cards are opaque rather than 90% translucent. The frosted-glass effect let
+  the background bleed through, so a white card read as grey on anything but a
+  pale image — and legibility over an arbitrary photograph matters more here than
+  the effect did.
+
+  The expiry moved inside the card, above the title, on a tinted pill. It used to
+  sit underneath on the page itself, where it was unreadable the moment a dark
+  background was configured; no fixed text colour survives an arbitrary
+  photograph. Leading with it also puts the deadline first, which is the thing a
+  recipient has to act on.
+
+- **`pnpm demo:screenshots`.** Builds the app, seeds a throwaway instance and
+  captures every page in every language, with a browsable index pairing the
+  languages side by side. The README's screenshot is one of those captures and is
+  refreshed on every run, so it cannot show an interface that no longer exists.
+
+  The seeded gallery's images are generated as real PNGs rather than shipped as
+  assets, because the preview endpoint sniffs magic bytes and would 404 a
+  placeholder — the very feature the screenshot exists to show. File sizes are
+  fixture values rather than bytes on disk, so a transfer can list a 1.2 GB video
+  without the script writing 1.2 GB for a screenshot.
+
+- **Badges and a screenshot at the top of the README**, reading the Nuxt version,
+  the app version and the published Docker tag from the repository itself so they
+  follow a release instead of being typed by hand.
+
+## v0.1.1
 
 ### Fixes
 
@@ -29,6 +91,14 @@
   next boot and fail on a duplicate column — for ever, since startup could never
   get past it. The two column-adding migrations now check for the column first,
   making a re-run a no-op. The lock does not help here; this is a separate hole.
+
+- **The release workflow tried to sync the README to Docker Hub and couldn't.**
+  That endpoint refuses personal access tokens and accepts only the account
+  password, so the step failed with `Forbidden` on every release — after the
+  image had already been pushed, so nothing was ever actually missing. Removed
+  rather than fixed: keeping a cosmetic field in sync is not worth putting a
+  credential with full account access into CI. The description is set once by
+  hand in the Docker Hub UI.
 
 ## v0.1.0
 
