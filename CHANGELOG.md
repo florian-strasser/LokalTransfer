@@ -1,5 +1,31 @@
 # Changelog
 
+## v0.1.3
+
+### Security
+
+- **Cleared all 22 Dependabot alerts** — 2 critical, 12 high, 6 moderate, 2 low —
+  in `shell-quote`, `tar`, `js-yaml`, `brace-expansion`, `nanoid`, `svgo`,
+  `launch-editor`, `esbuild` and `@babel/core`. Every one arrives through
+  something else; none is a package this project imports, so they are pinned with
+  overrides rather than by bumping a direct dependency. `pnpm audit` now reports
+  zero.
+
+  Most are build- or development-time only, but not all: `brace-expansion`
+  reaches production through `archiver`, which is what streams the download zip.
+
+  Ranges are scoped to the affected major line, so a copy already outside the
+  advisory — esbuild 0.25.x, brace-expansion 1.x — is not dragged across a major
+  boundary for nothing. One forced major bump was unavoidable: the advisory for
+  `js-yaml`'s `!!omap` resolution states the fix was not backported to 3.x or
+  4.x, so 5.x is the only version that clears it.
+
+  Two things worth knowing for next time. **pnpm 11 ignores `pnpm.overrides` in
+  `package.json`** — overrides live in `pnpm-workspace.yaml`, and one written in
+  the old place looks applied while doing nothing. And **the local audit database
+  lagged GitHub's**: it missed the `nanoid` and `svgo` alerts entirely, so the
+  Dependabot list was the authoritative one.
+
 ## v0.1.2
 
 ### Fixes
