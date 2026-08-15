@@ -15,10 +15,14 @@ import { createHash, randomBytes } from 'node:crypto'
 //
 // CodeQL flags this as `js/insufficient-password-hash`. The rule fires on any
 // fast hash reaching something it has decided is a password; here the input is
-// `generateApiKey()` — 32 bytes from the CSPRNG — so the premise the rule tests
-// for does not hold. Suppressed at the call rather than silently, so the next
-// person to read the alert finds the reasoning instead of an unexplained
-// dismissal.
+// `generateApiKey()` — 32 bytes from the CSPRNG — so the premise it tests for
+// does not hold, and switching to bcrypt would make the system worse for the
+// reasons above.
+//
+// It is dismissed in the repository's code-scanning alerts, not suppressed here:
+// GitHub's default setup does not honour `// codeql[...]` comments, and one left
+// in the source reads as a working suppression while doing nothing. This comment
+// is the record of why the dismissal is correct.
 
 /** The token handed to the caller. 32 bytes of entropy, hex encoded. */
 export function generateApiKey(): string {
@@ -26,7 +30,6 @@ export function generateApiKey(): string {
 }
 
 export function hashApiKey(key: string): string {
-  // codeql[js/insufficient-password-hash]
   return createHash('sha256').update(key, 'utf8').digest('hex')
 }
 

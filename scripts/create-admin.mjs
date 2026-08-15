@@ -8,12 +8,19 @@
 //
 //   node scripts/create-admin.mjs "Your Name" you@example.com
 //
-// Reads the same NUXT_MYSQL_* variables as the app. Pass a password as the third
-// argument, or let it generate one and print it once.
+// Reads the same NUXT_MYSQL_* variables as the app. The password is typed at a
+// hidden prompt, or supplied in ADMIN_PASSWORD for an unattended run.
+//
+// It is never printed, and never taken from the command line. A secret in argv
+// is visible to `ps` for every user on the box and lands in shell history; a
+// secret printed to stdout lands in whatever is capturing it — a CI log, a
+// `| tee`, the container's output. Reading it from a prompt or the environment
+// is the only path that leaves it in neither.
 
 import { createPool } from 'mysql2/promise'
 import bcrypt from 'bcryptjs'
-import { randomBytes, randomUUID } from 'node:crypto'
+import { randomUUID } from 'node:crypto'
+import { createInterface } from 'node:readline'
 import { readFileSync } from 'node:fs'
 
 // Nuxt loads .env itself; this script runs outside Nuxt, so it reads the file
@@ -41,10 +48,20 @@ function loadEnvFile(path) {
 
 loadEnvFile('.env')
 
-const [name, email, providedPassword] = process.argv.slice(2)
+const [name, email, extra] = process.argv.slice(2)
 
 if (!name || !email) {
-  console.error('Usage: node scripts/create-admin.mjs "Full Name" email@example.com [password]')
+  console.error('Usage: node scripts/create-admin.mjs "Full Name" email@example.com')
+  console.error('The password is typed at a prompt, or set in ADMIN_PASSWORD.')
+  process.exit(1)
+}
+
+// Refused rather than accepted quietly: someone passing a password here has put
+// it in their shell history and in `ps` output, and should know that.
+if (extra) {
+  console.error('Do not pass the password as an argument — it is visible in `ps`')
+  console.error('and recorded in your shell history. Set ADMIN_PASSWORD instead,')
+  console.error('or omit it and type it at the prompt.')
   process.exit(1)
 }
 
@@ -53,15 +70,43 @@ if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
   process.exit(1)
 }
 
-// Same alphabet as the admin UI's generator: no characters that are ambiguous
-// when read off a screen and typed somewhere else.
-function generatePassword() {
-  const alphabet = 'abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789'
-  const bytes = randomBytes(20)
-  return Array.from(bytes, byte => alphabet[byte % alphabet.length]).join('')
+/**
+ * Read a line from the terminal without echoing it.
+ *
+ * `_writeToOutput` is readline's own hook for exactly this; overriding it lets
+ * the prompt through and swallows the keystrokes, so the password never reaches
+ * the screen and so cannot be read over a shoulder or scraped from a scrollback
+ * buffer.
+ */
+function promptHidden(question) {
+  return new Promise((resolve, reject) => {
+    if (!process.stdin.isTTY) {
+      reject(new Error('No terminal to prompt on. Set ADMIN_PASSWORD instead.'))
+      return
+    }
+
+    const rl = createInterface({ input: process.stdin, output: process.stdout, terminal: true })
+    rl._writeToOutput = (chunk) => {
+      if (chunk.includes(question)) process.stdout.write(question)
+    }
+
+    rl.question(question, (answer) => {
+      rl.close()
+      process.stdout.write('\n')
+      resolve(answer)
+    })
+  })
 }
 
-const password = providedPassword || generatePassword()
+let password = process.env.ADMIN_PASSWORD
+if (!password) {
+  // A stack trace here would be noise: not having a terminal is a normal way to
+  // run this, and the answer is a variable, not a bug report.
+  password = await promptHidden('  Password: ').catch((error) => {
+    console.error(error.message)
+    process.exit(1)
+  })
+}
 
 if (password.length < 8) {
   console.error('The password must be at least 8 characters long.')
@@ -127,28 +172,11 @@ try {
     conn.release()
   }
 
+  // The password is deliberately not echoed back. The operator chose it, so it
+  // needs no conveying, and there is nothing here for a log to capture.
   console.log('\nAdministrator created.\n')
   console.log(`  E-mail:   ${normalized}`)
-  if (!providedPassword) {
-    // Only ever printed to an interactive terminal.
-    //
-    // A generated password has to reach the operator somehow, and the console is
-    // the only channel this script has. But when the output is redirected — a CI
-    // job, `| tee setup.log`, `docker compose up` capturing container output —
-    // the same line writes the administrator's password into a file that
-    // outlives the run and is rarely treated as a secret. A TTY check keeps the
-    // interactive case exactly as it was and refuses the case that leaks.
-    if (process.stdout.isTTY) {
-      console.log(`  Password: ${password}`)
-      console.log('\nWrite this down now — it is not recoverable.\n')
-    } else {
-      console.log('  Password: (generated, not printed — output is not a terminal)')
-      console.log(
-        '\nRe-run this in a terminal, or pass a password as the third argument,'
-        + '\nso it is not written into whatever is capturing this output.\n'
-      )
-    }
-  }
+  console.log('')
 } catch (error) {
   console.error('Failed to create the administrator:', error.message)
   process.exit(1)

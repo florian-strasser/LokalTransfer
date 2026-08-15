@@ -1,5 +1,34 @@
 # Changelog
 
+## Unreleased
+
+### Security
+
+- **`create-admin` no longer handles a secret it can leak.** The previous
+  release stopped printing a generated password to non-interactive output, but
+  the value still flowed into `console.log` — so CodeQL still flagged it, rightly:
+  a runtime `isTTY` branch is not a guarantee about where the string can end up.
+
+  The script no longer generates or prints a password at all. It is typed at a
+  hidden prompt, or supplied in `ADMIN_PASSWORD` for an unattended run, and a
+  password passed as a command-line argument is now **refused** rather than
+  accepted — argv is visible to `ps` for every user on the machine and is
+  recorded in shell history, which was the quieter of the two leaks.
+
+  Nothing sensitive reaches stdout, so there is no path left for a CI log, a
+  `| tee`, or captured container output to record.
+
+### Notes
+
+- **CodeQL's `js/insufficient-password-hash` on `hashApiKey` needs dismissing in
+  the code-scanning UI.** The finding is a false positive — the input is 32 bytes
+  from the CSPRNG, so there is nothing to brute-force, and bcrypt would make
+  verification a scan over every stored key instead of an indexed lookup. The
+  `// codeql[...]` comment added last release did not suppress it: GitHub's
+  default setup does not honour inline suppressions, and an inert directive in
+  the source reads as a working one. It has been removed and the reasoning left
+  as a comment instead.
+
 ## v0.1.4
 
 ### Security

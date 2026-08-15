@@ -89,7 +89,11 @@ so the migrations run, then:
 pnpm create-admin "Your Name" you@example.com
 ```
 
-It prints a generated password once.
+It asks for the password at a hidden prompt. For an unattended run, set
+`ADMIN_PASSWORD` in the environment instead. The password is deliberately not
+accepted as a command-line argument and never printed: argv is visible to `ps`
+and recorded in shell history, and anything printed lands in whatever is
+capturing the output.
 
 Either way, every account after the first is created from **Users** in the app.
 
