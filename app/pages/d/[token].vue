@@ -5,7 +5,7 @@
 // Three states: not found / expired, locked behind a password, and unlocked. The
 // locked state is served the presentation shell only (layout, background), never
 // the file list — a list of filenames is often as revealing as the files.
-// `align: 'right'` puts the card against the right edge instead of centring it,
+// `align: 'left'` puts the card against the left edge instead of centring it,
 // leaving the rest of the viewport to the background image — the whole point of
 // the per-transfer background.
 definePageMeta({ layout: 'blank', align: 'left' })

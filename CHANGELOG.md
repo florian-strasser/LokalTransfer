@@ -11,6 +11,12 @@
   they are shown, the product screenshot loads lazily, and the colour tile no
   longer runs an animation the browser cannot hand to the compositor.
 
+### Fixed
+
+- **The download-page screenshot shows the card on the left**, where the app
+  has put it since v0.2.0 — on the documentation site, in the README and in the
+  link preview.
+
 ## v0.2.0
 
 ### Added
