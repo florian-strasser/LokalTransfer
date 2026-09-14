@@ -57,6 +57,14 @@
   tiptap resolution. It is within the range already declared and not required by
   any of the three fixes; the interface was checked after the bump.
 
+- **Cleared eleven more Dependabot alerts**, none of them across a major
+  version: nodemailer 9.1.1 (a denial of service in the address parser, two
+  recipient-domain validation bypasses, and `resolveContent()` escaping the
+  file and URL access sandbox), svgo 4.1.0 (two `removeScripts` bypasses), hono
+  4.13.7 (a `toSSG()` path traversal, query parsing past the URL fragment, and
+  unbounded `parseBody()` nesting), and vitest with `@vitest/mocker` 4.1.11 (a
+  path traversal through redirect mocks, development only).
+
 ### Fixed
 
 - **The upload's overall progress is a ring.** While a transfer runs, the figure

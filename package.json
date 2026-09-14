@@ -27,7 +27,7 @@
     "busboy": "^1.6.0",
     "motion-v": "^2.4.0",
     "mysql2": "^3.23.2",
-    "nodemailer": "^9.0.5",
+    "nodemailer": "^9.1.1",
     "nuxt": "^4.5.1",
     "tailwindcss": "^4.3.3",
     "uuid": "^14.0.1",
@@ -44,7 +44,7 @@
     "h3": "^1.15.11",
     "happy-dom": "^20.11.2",
     "typescript": "^6.0.3",
-    "vitest": "^4.1.10",
+    "vitest": "^4.1.11",
     "vue-tsc": "^3.3.9"
   },
   "packageManager": "pnpm@11.18.0",
