@@ -8,6 +8,7 @@ import {
   type EmailContext
 } from '../../server/utils/emailTemplates'
 import { t } from '../../server/utils/emailStrings'
+import { LOCALES } from '../../app/utils/locales'
 
 // Mail is the one output nobody sees fail: it is rendered on a server, sent to
 // somebody else's inbox, and a broken link or an unescaped apostrophe is only
@@ -24,6 +25,10 @@ const ctx: EmailContext = {
 }
 
 const de: EmailContext = { ...ctx, language: 'de' }
+
+// One context per language the app ships, so "every template" really is every
+// template in every language.
+const contexts: EmailContext[] = LOCALES.map(language => ({ ...ctx, language }))
 
 const files = [
   { filename: 'brief.pdf', size: 1024 * 1024 },
@@ -210,8 +215,8 @@ describe('renderPasswordResetEmail', () => {
 })
 
 describe('every template', () => {
-  it('produces a complete HTML document with a subject, in both languages', () => {
-    for (const context of [ctx, de]) {
+  it('produces a complete HTML document with a subject, in all ten languages', () => {
+    for (const context of contexts) {
       const mails = [
         renderTransferEmail(context, {
           senderName: 'Florian',

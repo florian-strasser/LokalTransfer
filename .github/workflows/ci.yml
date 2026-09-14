@@ -65,6 +65,13 @@ jobs:
       - name: Build
         run: pnpm run build
 
+      # The documentation site is a separate Nuxt project, so a broken page or a
+      # dead content query in it would otherwise only surface at deploy time.
+      # `generate` is what actually runs in production, and it prerenders every
+      # route — which is what makes this a real check rather than a compile.
+      - name: Build the documentation site
+        run: pnpm --filter lokaltransfer-docs generate
+
   docker:
     runs-on: ubuntu-latest
 

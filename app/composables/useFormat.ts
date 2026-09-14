@@ -1,7 +1,13 @@
 /** Formatting helpers shared by the transfer lists, the composer and the download page. */
 export function useFormat() {
   const { locale } = useI18n()
-  const config = useRuntimeConfig().public
+
+  // The regional tag for the active language — `de-DE`, `uk-UA` — from the one
+  // table every side of the app reads, so a language added there is formatted
+  // here without another edit.
+  const dateLocale = computed(() =>
+    (isLocale(locale.value) ? LOCALE_TAGS[locale.value] : 'en-GB'))
+  const settings = useSettings()
 
   /**
    * Human-readable byte size.
@@ -35,10 +41,10 @@ export function useFormat() {
     const date = value instanceof Date ? value : new Date(value)
     if (Number.isNaN(date.getTime())) return ''
 
-    return new Intl.DateTimeFormat(locale.value === 'de' ? 'de-DE' : 'en-GB', {
+    return new Intl.DateTimeFormat(dateLocale.value, {
       dateStyle: 'medium',
       timeStyle: 'short',
-      timeZone: String(config.timezone || 'UTC')
+      timeZone: settings.value.timezone
     }).format(date)
   }
 
@@ -48,9 +54,9 @@ export function useFormat() {
     const date = value instanceof Date ? value : new Date(value)
     if (Number.isNaN(date.getTime())) return ''
 
-    return new Intl.DateTimeFormat(locale.value === 'de' ? 'de-DE' : 'en-GB', {
+    return new Intl.DateTimeFormat(dateLocale.value, {
       dateStyle: 'medium',
-      timeZone: String(config.timezone || 'UTC')
+      timeZone: settings.value.timezone
     }).format(date)
   }
 

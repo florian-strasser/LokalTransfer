@@ -106,7 +106,7 @@ or the database. See `.env.example` for the full list; the ones worth knowing:
 | Variable | Default | Purpose |
 | --- | --- | --- |
 | `NUXT_APP_URL` | `http://localhost:3000` | Base for download and magic links |
-| `NUXT_LANGUAGE` | `en` | UI and e-mail language (`en` or `de`) |
+| `NUXT_LANGUAGE` | `en` | UI and e-mail language: `en`, `de`, `fr`, `es`, `it`, `nl`, `pl`, `uk`, `pt` or `cs` |
 | `NUXT_TIMEZONE` | `Europe/Berlin` | Zone dates are *displayed* in |
 | `NUXT_STORAGE_PATH` | `./storage` | Where uploads live |
 | `NUXT_MAX_FILE_SIZE_MB` | `2048` | Per-file limit |

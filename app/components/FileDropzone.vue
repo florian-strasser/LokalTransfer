@@ -134,7 +134,7 @@ const totalSize = computed(() => props.files.reduce((sum, item) => sum + item.fi
 
             <!-- Only while this file is actually in flight; a finished or
                  not-yet-started file has nothing to report. -->
-            <UProgress
+            <AppProgress
               v-if="item.status === 'uploading'"
               :model-value="item.progress"
               size="xs"

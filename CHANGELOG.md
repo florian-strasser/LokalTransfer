@@ -1,5 +1,163 @@
 # Changelog
 
+## v0.2.0
+
+### Added
+
+- **A documentation and marketing site at lokaltransfer.com**, a statically
+  generated Nuxt project under `docs/`: a landing page, a thirteen-part guide
+  from installation to troubleshooting, and a REST API reference, plus a sitemap
+  and an `llms.txt`. CI builds it alongside the app.
+
+- **Ten languages.** French, Spanish, Italian, Dutch, Polish, Ukrainian,
+  Portuguese and Czech join English and German — the same ten as LokalBoards,
+  in the same order — for the interface and for every outbound e-mail alike,
+  chosen as before with `NUXT_LANGUAGE`.
+
+  Three of them count differently. Polish, Ukrainian and Czech have one, few and
+  many, and vue-i18n's built-in three-form rule is zero, one and other, so "5
+  plików" would have rendered as "5 pliki". Those three carry three forms in
+  every count string and a plural rule of their own, written once in
+  `app/utils/locales.ts` and read by the interface, the mail renderer and the
+  vue-i18n config, so no two of them can disagree about a plural. The same
+  table names the regional tag each language's dates are formatted in, which
+  the interface and the mail had each been hard-coding as `de-DE`-or-`en-GB`.
+
+  A unit test holds every locale to the English one key by key — nothing
+  missing, nothing extra, no empty string, every placeholder kept, the right
+  number of plural forms — and pins the Slavic rules on the counts that tell
+  them apart: 22 is "few" in Polish and Ukrainian but "many" in Czech, and 21 is
+  singular in Ukrainian alone.
+
+### Security
+
+- **Cleared three Dependabot alerts** — `fast-uri` (high, host confusion via
+  percent-encoded scheme normalization), `@tiptap/core` (moderate, `__proto__`
+  turned into inherited executable DOM attributes) and `qs` (moderate,
+  `arrayLimit` bypass). None is a package this project imports, so all three are
+  pinned with overrides rather than by bumping a direct dependency. `pnpm audit`
+  reports zero.
+
+  Dependabot could not produce an update for any of them, and the reasons are
+  worth recording.
+
+  `fast-uri` and `qs` arrive through `ajv` and `express`, whose ranges (`^3.0.1`,
+  `^6.x`) already permit the fixed versions — the lockfile was simply holding an
+  older resolution, and `pnpm update` would not move it. Two scoped overrides.
+
+  `@tiptap/*` is the interesting one. It reaches this project as **auto-installed
+  peer dependencies** of `@nuxt/ui`, declared as `^3` — so 3.24.0 satisfies the
+  range and nothing would ever move it, which is exactly what Dependabot ran
+  into. Overriding `@tiptap/core` alone does not work either: the 36 sibling
+  packages peer-pin `@tiptap/core` to an *exact* version, so raising core on its
+  own leaves every extension demanding the version it just left. All 37 are
+  therefore listed, and move together to 3.31.2.
+
+  `@nuxt/ui` went from 4.10.0 to 4.11.0 as a side effect of investigating the
+  tiptap resolution. It is within the range already declared and not required by
+  any of the three fixes; the interface was checked after the bump.
+
+### Fixed
+
+- **The upload's overall progress is a ring.** While a transfer runs, the figure
+  worth looking at is the whole operation, not any one file — so it gets the room:
+  an arc on a track with the percentage counting in the middle, and the per-file
+  bars still in the list above for the detail. The documentation site's upload
+  feature shows the same ring.
+
+  It springs to each reading rather than easing between them. Progress arrives
+  per chunk of the stream, several times a second, so a smooth tween between
+  chunks was drawing readings the transfer never reported.
+
+  A drop snaps instead of springing. A reading only falls when a new transfer has
+  begun, and easing the arc back down reads as progress being lost — the
+  documentation site's looping demo showed exactly that at the end of each cycle,
+  unwinding from 100 to 0 over a second. Measured across a full loop afterwards:
+  one clean drop, then a clean sweep.
+
+  The arc is one circle whose dash pattern is its own circumference, offset by
+  however much is left to run, so it is drawn *along* the track rather than being
+  a second shape that has to be kept in register with it. The number beside it
+  animates per digit, columns keyed from the right so the ones column stays put
+  as the figure gains a digit — Motion's own `AnimateNumber` would do this, but
+  it is a Motion+ component and ships in no published version of `motion-v`.
+
+  This puts `motion-v` in the application bundle, not just the documentation
+  site's. The reduced-motion treatment differs between the two on purpose: the
+  site's fragments are decoration and stop, while a progress reading is the
+  feedback itself and keeps moving.
+
+- **The upload progress bar could run outside its own track.** `UProgress`
+  renders a full-width indicator and slides it into place with
+  `translateX(-(100 - percent)%)`, so at 20% the element sits some 400px to the
+  left of its track and only `overflow: hidden` keeps it out of sight. Chrome
+  clips it; WebKit does not reliably, and the composer gave it two well-known
+  reasons not to — a `backdrop-blur` ancestor and a `rounded-full` track. The bar
+  then ran out of its wrapper and across the card.
+
+  Both bars — the overall one and the per-file one — now fill by width instead,
+  so nothing ever extends past the track and there is nothing left to clip.
+  Measured across an upload: the fill's maximum overhang is 0px on every edge,
+  against 398px before. Sizes and colours still mirror the Nuxt UI theme, and the
+  value is clamped to 0–100, which is the other way a fill could overflow.
+
+- **The compose page and the download page are now the same composition.** The
+  card sits against the left edge of the layout — lined up under the logo — and
+  the background photograph fills the rest of the viewport, which is what a
+  background is for and what the download page already did. The two pages differ
+  in what is in the card, not in how the page is built.
+
+  The photograph is no longer washed out on the compose page either. That wash
+  existed to keep the page heading legible over an arbitrary image; the heading
+  moved inside the card, where it has an opaque surface under it, so there is no
+  loose text left to protect and no reason to fade a picture the operator chose.
+
+  The card is centred vertically with auto margins rather than by justifying the
+  flex container: the compose form is often taller than the viewport, and
+  centring by justification would put the top of it above the scroll origin,
+  where it cannot be reached. Checked at 600px tall, where the form overflows —
+  it starts below the header and the page scrolls normally.
+
+- **The download card moved back to the left.**
+
+- **The compose page kept its "Neue Übertragung" heading after sending.** The
+  form it named had been replaced by the result card, so the page was headed by a
+  description of something no longer on screen. The composer now tells the page
+  when it has swapped, and the heading goes with the form; the card is centred on
+  the viewport rather than left at the top of a mostly empty page.
+
+- **Six environment variables were silently ignored by the interface.**
+  `NUXT_APP_NAME`, `NUXT_LANGUAGE`, `NUXT_MAX_FILE_SIZE_MB`,
+  `NUXT_MAX_FILES_PER_TRANSFER`, `NUXT_DEFAULT_RETENTION_DAYS` and
+  `NUXT_TIMEZONE` all reached the server and none of them reached the browser,
+  so the app name in the title and the sidebar, both upload limits, the default
+  retention in the composer and the timezone every date is rendered in were
+  whatever the image was built with.
+
+  Nuxt maps `runtimeConfig.public.foo` to `NUXT_PUBLIC_FOO` and to nothing else.
+  These six sat under `public` fed from plain `NUXT_*` names — and because
+  `nuxt.config.ts` is evaluated during the build, that bakes in whatever the
+  *build machine* had, after which no variable can dislodge it. The keys looked
+  configurable, were documented as configurable, and were not.
+
+  It is invisible in development, where the build and the run share one
+  environment, and total on a prebuilt image — which is how this app is meant to
+  run. Confirmed against a production build: started with `NUXT_APP_NAME`,
+  `NUXT_MAX_FILE_SIZE_MB`, `NUXT_DEFAULT_RETENTION_DAYS` and `NUXT_TIMEZONE` all
+  set, the browser still received `LokalTransfer`, `2048` and `14`, while the
+  `NUXT_PUBLIC_COLOR_*` variables came through — the segment in the name being
+  the only difference between them.
+
+  They are now server-side keys, resolved during SSR and carried to the browser
+  in the payload by `useSettings()` — the shape LokalBoards already uses for the
+  same two values. No variable is renamed. Mutating `runtimeConfig.public` from a
+  Nitro plugin is not an alternative: it is frozen in production and assigning to
+  it crashes the server on boot.
+
+  A unit test now fails if any key under `public` is fed by a variable without a
+  `PUBLIC_` segment. The mistake is invisible at the call site and costs nothing
+  to make again, so it is pinned rather than left to review.
+
 ## v0.1.5
 
 ### Security

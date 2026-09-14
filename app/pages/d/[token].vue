@@ -8,7 +8,7 @@
 // `align: 'right'` puts the card against the right edge instead of centring it,
 // leaving the rest of the viewport to the background image — the whole point of
 // the per-transfer background.
-definePageMeta({ layout: 'blank', align: 'right' })
+definePageMeta({ layout: 'blank', align: 'left' })
 
 const { t } = useI18n()
 const route = useRoute()

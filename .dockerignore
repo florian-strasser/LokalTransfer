@@ -25,3 +25,9 @@ storage
 logs
 coverage
 test
+
+# The documentation site. It is a workspace member, so `pnpm install` in the
+# build resolves the lockfile without it — verified: none of its dependencies
+# land in the app image. Excluding it here just keeps the build context small
+# and stops a docs change busting the Docker layer cache.
+docs

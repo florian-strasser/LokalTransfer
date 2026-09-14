@@ -15,14 +15,31 @@ const props = defineProps<{
   /** `guest` swaps the free-text recipients for the team picker and hides the
       share options, which guests don't configure. */
   mode: 'member' | 'guest'
+  /** The page heading, rendered inside the card rather than above it.
+   *
+   * It lives in here because the page behind it shows the background photograph
+   * unwashed, and a heading loose on top of a photograph is legible or not
+   * depending on what the photograph happens to be. Inside, it has the card's
+   * own opaque surface under it. The result card replaces the whole thing and
+   * carries its own heading, so this disappears exactly when the form does. */
+  title?: string
 }>()
+
+// The page above still needs to know when the form has been replaced by the
+// result, so it can centre the shorter card on the viewport.
+const emit = defineEmits<{ 'update:sent': [boolean] }>()
 
 const { t } = useI18n()
 const { formatBytes, formatDateTime } = useFormat()
-const config = useRuntimeConfig().public
+const settings = useSettings()
 const notify = useNotify()
 
 const upload = useTransferUpload()
+
+watch(
+  () => upload.state.value === 'done' && Boolean(upload.result.value),
+  sent => emit('update:sent', sent)
+)
 
 const subject = ref('')
 const message = ref('')
@@ -92,7 +109,7 @@ const retentionOptions = computed(() =>
     value: days
   })))
 
-const retentionDays = ref(Number(config.defaultRetentionDays) || 14)
+const retentionDays = ref(settings.value.defaultRetentionDays)
 
 const layoutOptions = computed(() => [
   { label: t('compose.layoutList'), value: 'list' as const },
@@ -262,11 +279,18 @@ const progressLabel = computed(() => {
     class="rounded-2xl border border-default bg-default/90 shadow-xl backdrop-blur-md"
   >
     <div class="space-y-4 p-5 sm:p-6">
+      <h1
+        v-if="title"
+        class="text-lg font-semibold text-highlighted"
+      >
+        {{ title }}
+      </h1>
+
       <!-- Files come first: it's the one thing every transfer needs. -->
       <FileDropzone
         :files="upload.files.value"
         :max-files="upload.maxFiles"
-        :max-file-size-mb="Number(config.maxFileSizeMb)"
+        :max-file-size-mb="settings.maxFileSizeMb"
         :disabled="upload.isBusy.value"
         compact
         @add="upload.addFiles"
@@ -461,15 +485,17 @@ const progressLabel = computed(() => {
         :description="upload.errorMessage.value"
       />
 
+      <!-- While a transfer runs, the overall figure is the thing worth looking
+           at — so it gets the room, as a ring, with the per-file bars still in
+           the list above for the detail. -->
       <div
         v-if="upload.isBusy.value"
-        class="space-y-2"
+        class="flex flex-col items-center gap-3 py-2"
       >
-        <div class="flex items-center justify-between text-sm text-muted">
-          <span>{{ progressLabel }}</span>
-          <span>{{ upload.overallProgress.value }}%</span>
-        </div>
-        <UProgress :model-value="upload.overallProgress.value" />
+        <AppProgressRing :model-value="upload.overallProgress.value" />
+        <p class="text-sm text-muted">
+          {{ progressLabel }}
+        </p>
       </div>
 
       <UButton

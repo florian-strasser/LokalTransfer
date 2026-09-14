@@ -1,5 +1,16 @@
+# The documentation site is its own Nuxt project, deployed separately as static
+# files — but it is a workspace member rather than a detached install, so one
+# `pnpm install` covers both and the security overrides below apply to its
+# dependencies too. A standalone install would need its own lockfile and its own
+# audit, and would quietly miss every pin made here.
+packages:
+  - docs
+
 allowBuilds:
   '@parcel/watcher': false
+  # @nuxt/content stores the parsed Markdown in SQLite, so the docs site cannot
+  # build without this one's native module.
+  better-sqlite3: true
   '@tailwindcss/oxide': false
   esbuild: false
   unrs-resolver: false
@@ -29,3 +40,50 @@ overrides:
   launch-editor@<2.14.1: ^2.14.1
   esbuild@>=0.27.3 <0.28.1: ^0.28.2
   '@babel/core@7': ^7.29.7
+  # Reached through ajv, which asks for ^3.0.1 — the range already allows the
+  # fix, the lockfile was simply holding an older resolution.
+  fast-uri@>=3.0.0 <3.1.6: ^3.1.6
+  # Via express/body-parser. Scoped to the affected window so a copy outside it
+  # is left where it is.
+  qs@>=6.14.2 <=6.15.3: ^6.16.0
+  # Tiptap arrives as auto-installed *peers* of @nuxt/ui, declared as `^3` — so
+  # the advisory version satisfies the range and nothing will ever move it on its
+  # own. Every package has to be listed because they peer-pin @tiptap/core to an
+  # exact version: raising core alone leaves 36 siblings demanding the old one.
+  '@tiptap/core@3': ^3.30.4
+  '@tiptap/extension-blockquote@3': ^3.30.4
+  '@tiptap/extension-bold@3': ^3.30.4
+  '@tiptap/extension-bubble-menu@3': ^3.30.4
+  '@tiptap/extension-bullet-list@3': ^3.30.4
+  '@tiptap/extension-code@3': ^3.30.4
+  '@tiptap/extension-code-block@3': ^3.30.4
+  '@tiptap/extension-collaboration@3': ^3.30.4
+  '@tiptap/extension-document@3': ^3.30.4
+  '@tiptap/extension-drag-handle@3': ^3.30.4
+  '@tiptap/extension-drag-handle-vue-3@3': ^3.30.4
+  '@tiptap/extension-dropcursor@3': ^3.30.4
+  '@tiptap/extension-floating-menu@3': ^3.30.4
+  '@tiptap/extension-gapcursor@3': ^3.30.4
+  '@tiptap/extension-hard-break@3': ^3.30.4
+  '@tiptap/extension-heading@3': ^3.30.4
+  '@tiptap/extension-horizontal-rule@3': ^3.30.4
+  '@tiptap/extension-image@3': ^3.30.4
+  '@tiptap/extension-italic@3': ^3.30.4
+  '@tiptap/extension-link@3': ^3.30.4
+  '@tiptap/extension-list@3': ^3.30.4
+  '@tiptap/extension-list-item@3': ^3.30.4
+  '@tiptap/extension-list-keymap@3': ^3.30.4
+  '@tiptap/extension-mention@3': ^3.30.4
+  '@tiptap/extension-node-range@3': ^3.30.4
+  '@tiptap/extension-ordered-list@3': ^3.30.4
+  '@tiptap/extension-paragraph@3': ^3.30.4
+  '@tiptap/extension-placeholder@3': ^3.30.4
+  '@tiptap/extension-strike@3': ^3.30.4
+  '@tiptap/extension-text@3': ^3.30.4
+  '@tiptap/extension-underline@3': ^3.30.4
+  '@tiptap/extensions@3': ^3.30.4
+  '@tiptap/markdown@3': ^3.30.4
+  '@tiptap/pm@3': ^3.30.4
+  '@tiptap/starter-kit@3': ^3.30.4
+  '@tiptap/suggestion@3': ^3.30.4
+  '@tiptap/vue-3@3': ^3.30.4

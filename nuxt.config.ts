@@ -6,7 +6,8 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
     '@nuxt/ui',
     '@nuxtjs/i18n',
-    '@nuxtjs/mcp-toolkit'
+    '@nuxtjs/mcp-toolkit',
+    'motion-v/nuxt'
   ],
 
   devtools: {
@@ -57,13 +58,14 @@ export default defineNuxtConfig({
   // reach a built Nuxt app. Public keys are exposed to the browser (the theme
   // colours have to be, to render), everything else stays server-side.
   runtimeConfig: {
+    // Only keys whose environment variable actually carries the `PUBLIC_`
+    // segment belong here. Nuxt maps `public.foo` to `NUXT_PUBLIC_FOO` and to
+    // nothing else, so a public key fed from a plain `NUXT_FOO` is frozen at
+    // whatever the build machine had — it looks configurable and is not. The app
+    // name, the language, both upload limits, the default retention and the
+    // timezone are therefore server-side keys, resolved during SSR and carried
+    // to the browser by useSettings() (app/composables/useSettings.ts).
     public: {
-      appName: process.env.NUXT_APP_NAME || 'LokalTransfer',
-      // Public because the browser needs it too: the locale plugin runs on both
-      // sides, and if the client couldn't see the configured language it would
-      // fall back to the default and hydrate over the server's markup with the
-      // wrong messages.
-      language: process.env.NUXT_LANGUAGE || 'en',
       // The single accent colour. A full 50–950 ramp is derived from this hex at
       // runtime (see app/utils/colorScale.ts), so one variable themes the whole
       // app. Everything else is neutral by design.
@@ -73,12 +75,6 @@ export default defineNuxtConfig({
       // chroma here would reintroduce a second colour.
       colorNeutral: process.env.NUXT_PUBLIC_COLOR_NEUTRAL || '#71717A',
       colorNeutralDark: process.env.NUXT_PUBLIC_COLOR_NEUTRAL_DARK || '#71717A',
-      // Maximum size of a single file, in megabytes. Mirrored server-side by
-      // maxFileSizeMb below; this copy only drives client-side pre-validation.
-      maxFileSizeMb: process.env.NUXT_MAX_FILE_SIZE_MB || '2048',
-      maxFilesPerTransfer: process.env.NUXT_MAX_FILES_PER_TRANSFER || '50',
-      // Default retention in days. "0" means keep forever.
-      defaultRetentionDays: process.env.NUXT_DEFAULT_RETENTION_DAYS || '14',
       // Background image shown behind the composer, the download page and the
       // sign-in screen. Either a full URL or a path to something in public/.
       // A sender can override it per transfer; this is the instance default.
@@ -89,8 +85,7 @@ export default defineNuxtConfig({
       backgroundCredit: process.env.NUXT_PUBLIC_BACKGROUND_CREDIT || '',
 
       privacyUrl: process.env.NUXT_PUBLIC_PRIVACY_URL || '',
-      imprintUrl: process.env.NUXT_PUBLIC_IMPRINT_URL || '',
-      timezone: process.env.NUXT_TIMEZONE || 'Europe/Berlin'
+      imprintUrl: process.env.NUXT_PUBLIC_IMPRINT_URL || ''
     },
 
     appName: process.env.NUXT_APP_NAME || 'LokalTransfer',
@@ -193,16 +188,26 @@ export default defineNuxtConfig({
   },
 
   i18n: {
-    // Both locales are bundled and the active one is chosen at runtime from
+    // All ten locales are bundled and the active one is chosen at runtime from
     // NUXT_LANGUAGE (see app/plugins/i18n-locale.ts), because this config is
     // evaluated at build time when the env variable isn't available yet.
     // "no_prefix" keeps URLs clean — download links must not carry a locale.
+    // The same ten as LokalBoards, in the same order. Plural rules for the
+    // three Slavic ones live in i18n/i18n.config.ts.
     strategy: 'no_prefix',
     defaultLocale: 'en',
     detectBrowserLanguage: false,
     locales: [
       { code: 'en', file: 'en.json' },
-      { code: 'de', file: 'de.json' }
+      { code: 'de', file: 'de.json' },
+      { code: 'fr', file: 'fr.json' },
+      { code: 'es', file: 'es.json' },
+      { code: 'it', file: 'it.json' },
+      { code: 'nl', file: 'nl.json' },
+      { code: 'pl', file: 'pl.json' },
+      { code: 'uk', file: 'uk.json' },
+      { code: 'pt', file: 'pt.json' },
+      { code: 'cs', file: 'cs.json' }
     ]
   },
 

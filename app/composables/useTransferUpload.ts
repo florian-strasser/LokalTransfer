@@ -56,10 +56,10 @@ export interface TransferResult {
 export function useTransferUpload() {
   const { t } = useI18n()
   const { errorCode } = useApiError()
-  const config = useRuntimeConfig().public
+  const settings = useSettings()
 
-  const maxFileSize = (Number(config.maxFileSizeMb) || 2048) * 1024 * 1024
-  const maxFiles = Number(config.maxFilesPerTransfer) || 50
+  const maxFileSize = settings.value.maxFileSizeMb * 1024 * 1024
+  const maxFiles = settings.value.maxFilesPerTransfer
 
   const files = ref<QueuedFile[]>([])
   const state = ref<UploadState>('idle')
@@ -100,7 +100,7 @@ export function useTransferUpload() {
       if (file.size > maxFileSize) {
         errorMessage.value = t('compose.errors.FILE_TOO_LARGE', {
           filename: file.name,
-          size: `${config.maxFileSizeMb} MB`
+          size: `${settings.value.maxFileSizeMb} MB`
         })
         continue
       }
@@ -181,7 +181,7 @@ export function useTransferUpload() {
         item.status = 'error'
         item.error = t(`compose.errors.${code}`, {
           filename: item.file.name,
-          size: `${config.maxFileSizeMb} MB`,
+          size: `${settings.value.maxFileSizeMb} MB`,
           count: maxFiles
         })
         reject(new Error(code))

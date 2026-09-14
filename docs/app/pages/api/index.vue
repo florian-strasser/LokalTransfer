@@ -1,0 +1,31 @@
+<template>
+  <main
+    role="main"
+    class="container pt-30 pb-10 sm:pb-14"
+  >
+    <div class="flex flex-col gap-10 md:flex-row md:items-start md:gap-12">
+      <DocsNav />
+      <ContentWrapper>
+        <ContentRenderer
+          v-if="page"
+          :value="page"
+          class="wysiwyg"
+        />
+      </ContentWrapper>
+    </div>
+  </main>
+</template>
+
+<script setup lang="ts">
+const { data: page } = await useAsyncData('api-index', () =>
+  queryCollection('api').path('/api').first())
+
+if (!page.value) {
+  throw createError({ statusCode: 404, statusMessage: 'Page not found', fatal: true })
+}
+
+usePageMeta({
+  title: page.value?.title,
+  description: page.value?.description
+})
+</script>

@@ -7,9 +7,8 @@
 // same trade LokalBoards makes.
 const { signOut, isAdmin } = useAuth()
 const { t } = useI18n()
-const config = useRuntimeConfig().public
-
-const appName = String(config.appName || 'LokalTransfer')
+// Read during setup, where the Nuxt context useState needs is available.
+const appName = useSettings().value.appName
 
 // One flat list of icon actions, the way LokalBoards does it: no dropdown, every
 // destination one click away. Labels live in tooltips rather than beside the
