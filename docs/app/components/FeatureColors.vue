@@ -6,16 +6,13 @@
     class="ui col"
     aria-hidden="true"
   >
-    <div class="ui-panel col__panel">
+    <div
+      class="ui-panel"
+      :style="{ '--accent': current.hex }"
+    >
       <div class="ui-head">
         <span>Accent colour</span>
-        <code class="col__hex">
-          <span
-            v-for="c in colours"
-            :key="c.hex"
-            class="col__hex-step"
-          >{{ c.hex }}</span>
-        </code>
+        <code class="col__hex">{{ current.hex }}</code>
       </div>
 
       <div class="col__swatches">
@@ -41,49 +38,35 @@
 
 <script setup lang="ts">
 // Four accents that are genuinely different in hue, so the change is legible at
-// a glance. The first is the app's own default.
+// a glance. The first is the app's own default, and the resting frame.
 const colours = [
   { hex: '#CC0030' },
   { hex: '#0066CC' },
   { hex: '#0F8A5F' },
   { hex: '#7A3FF2' }
 ]
+
+// Stepped by a timer rather than a keyframe on `--accent`: a custom property
+// cannot be animated on the compositor, so the keyframe had the browser repainting
+// the tile on its main thread for the whole cycle. The change was instant anyway,
+// so nothing is lost by switching it from script every three and a half seconds.
+const index = ref(0)
+const current = computed(() => colours[index.value]!)
+
+let timer: ReturnType<typeof setInterval> | undefined
+onMounted(() => {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+  timer = setInterval(() => {
+    index.value = (index.value + 1) % colours.length
+  }, 3500)
+})
+onUnmounted(() => clearInterval(timer))
 </script>
 
 <style scoped>
-/* Every tinted element animates the same custom property on the same 14s clock,
-   so nothing can fall out of step with the hex printed above it. */
-.col__panel {
-  --accent: #cc0030;
-  animation: col-accent 14s steps(1) infinite;
-}
-
-@keyframes col-accent {
-  0%   { --accent: #cc0030; }
-  25%  { --accent: #0066cc; }
-  50%  { --accent: #0f8a5f; }
-  75%  { --accent: #7a3ff2; }
-}
-
 .col__hex {
-  display: inline-grid;
   font-size: 0.95em;
   color: var(--accent);
-}
-.col__hex-step {
-  grid-area: 1 / 1;
-  text-align: right;
-  opacity: 0;
-  animation: col-step 14s steps(1) infinite;
-}
-.col__hex-step:nth-child(1) { animation-delay: 0s; }
-.col__hex-step:nth-child(2) { animation-delay: -10.5s; }
-.col__hex-step:nth-child(3) { animation-delay: -7s; }
-.col__hex-step:nth-child(4) { animation-delay: -3.5s; }
-
-@keyframes col-step {
-  0%, 24.99% { opacity: 1; }
-  25%, 100%  { opacity: 0; }
 }
 
 .col__swatches {
@@ -95,11 +78,6 @@ const colours = [
   width: 1.5em;
   height: 1.5em;
   border-radius: 999px;
-}
-/* The one currently in use is ringed. Rather than four more animations, the
-   ring is drawn by the shared accent: only the swatch whose own colour matches
-   it shows one, because the ring is that colour at 30% over the swatch. */
-.col__swatch {
   box-shadow: 0 0 0 0.18em var(--color-white), 0 0 0 0.36em transparent;
 }
 
@@ -121,12 +99,5 @@ const colours = [
 }
 .col__btn {
   background: var(--accent);
-}
-
-/* Resting frame: the app's own default accent, which is what an unconfigured
-   instance looks like. */
-@media (prefers-reduced-motion: reduce) {
-  .col__panel { --accent: #cc0030; }
-  .col__hex-step:nth-child(1) { opacity: 1; }
 }
 </style>

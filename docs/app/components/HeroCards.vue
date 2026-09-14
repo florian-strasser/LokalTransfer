@@ -28,8 +28,8 @@
     >
       <img
         :src="`/images/hero/${slot.src}.webp`"
-        :srcset="`/images/hero/${slot.src}-320.webp 320w, /images/hero/${slot.src}.webp 640w`"
-        sizes="(min-width: 80rem) 16rem, 14vw"
+        :srcset="`/images/hero/${slot.src}-160.webp 160w, /images/hero/${slot.src}-320.webp 320w, /images/hero/${slot.src}.webp 640w`"
+        sizes="(max-width: 39.99rem) 5rem, (max-width: 63.99rem) 6rem, (min-width: 80rem) 16rem, 14vw"
         alt=""
         width="640"
         height="640"

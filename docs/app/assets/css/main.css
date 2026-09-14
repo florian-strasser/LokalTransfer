@@ -471,3 +471,96 @@ html.menu-open {
     transition: none;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Text and block reveals, from SplitText and FadeInBottom.
+
+   Global rather than scoped to the components: both are used by the hero, which
+   hydrates straight away, and by the sections below it, which hydrate once they
+   scroll into view — and a scoped block shared between the two ends up in a
+   stylesheet of its own, linked from the page and render-blocking. Here they are
+   inlined with the rest of the page's CSS. Every selector is namespaced.
+   --------------------------------------------------------------------------- */
+
+/* The mask each piece of split text rises out of. `overflow: hidden` needs a box,
+   so the word is an inline-block; the padding and negative margin together give
+   back the descender space (g, y, p) the clip would otherwise cut off. The gap
+   between words is a margin rather than an element of its own, which keeps the
+   page's DOM a couple of hundred nodes smaller. */
+.split-text__word {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  padding-bottom: 0.12em;
+  margin-bottom: -0.12em;
+  margin-right: 0.25em;
+}
+.split-text__word:last-child {
+  margin-right: 0;
+}
+/* Hidden in the stylesheet rather than by script, so a statically generated page
+   never paints the finished text and then snaps it away on hydration. */
+.split-text__piece {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(110%);
+  transition:
+    transform 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: var(--piece-delay);
+}
+.split-text--revealed .split-text__piece {
+  opacity: 1;
+  transform: none;
+}
+/* The same movement as a keyframe, for text on screen at load: it starts the
+   moment the text is painted, with no script involved. */
+.split-text--immediate .split-text__piece {
+  animation: split-text-rise 0.8s cubic-bezier(0.16, 1, 0.3, 1) var(--piece-delay) both;
+}
+@keyframes split-text-rise {
+  from {
+    opacity: 0;
+    transform: translateY(110%);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.fade-in-bottom {
+  /* The wrapper's full height, so a block that stretches — a feature tile in a
+     grid row — still stretches with this in between. Under a wrapper of auto
+     height it resolves to auto and changes nothing. */
+  height: 100%;
+  opacity: 0;
+  transform: translateY(4rem);
+}
+.fade-in-bottom--immediate {
+  animation: fade-in-bottom-rise 0.7s ease-out var(--fade-delay) both;
+}
+@keyframes fade-in-bottom-rise {
+  from {
+    opacity: 0;
+    transform: translateY(4rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Anyone who has asked for less motion gets the text and the blocks, immediately,
+   in place. */
+@media (prefers-reduced-motion: reduce) {
+  .split-text__piece,
+  .split-text--immediate .split-text__piece,
+  .fade-in-bottom,
+  .fade-in-bottom--immediate {
+    opacity: 1;
+    transform: none;
+    transition: none;
+    animation: none;
+  }
+}

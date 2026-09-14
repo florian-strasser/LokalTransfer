@@ -66,7 +66,7 @@
               <img
                 src="/images/florian-strasser-portrait.webp"
                 srcset="/images/florian-strasser-portrait-640.webp 640w, /images/florian-strasser-portrait.webp 942w"
-                sizes="(min-width: 448px) 28rem, 100vw"
+                sizes="(min-width: 64rem) 26rem, (min-width: 40rem) min(calc(100vw - 4rem), 28rem), calc(100vw - 3rem)"
                 alt="Florian Strasser, the creator of LokalTransfer"
                 width="942"
                 height="1178"

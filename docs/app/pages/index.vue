@@ -1,11 +1,14 @@
 <template>
   <main role="main">
     <PageHero />
-    <PageAbout />
-    <PageFeatures />
-    <PagePricing />
-    <PageFaq />
-    <PageCta />
+    <!-- Everything below the hero is rendered into the HTML as before, but only
+         hydrated once it scrolls into view: its code is split into chunks of its
+         own and neither downloaded nor run while the page is loading. -->
+    <LazyPageAbout hydrate-on-visible />
+    <LazyPageFeatures hydrate-on-visible />
+    <LazyPagePricing hydrate-on-visible />
+    <LazyPageFaq hydrate-on-visible />
+    <LazyPageCta hydrate-on-visible />
   </main>
 </template>
 

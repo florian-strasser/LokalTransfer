@@ -18,7 +18,6 @@ const siteURL = 'https://lokaltransfer.com'
 export default defineNuxtConfig({
 
   modules: ['@nuxt/content', 'nuxt-llms', '@nuxtjs/sitemap', 'motion-v/nuxt'],
-
   ssr: true,
   devtools: { enabled: true },
 
@@ -61,6 +60,12 @@ export default defineNuxtConfig({
     url: siteURL,
     name: appName,
     trailingSlash: true
+  },
+  features: {
+    inlineStyles: true
+  },
+  experimental: {
+    extractAsyncDataHandlers: true
   },
   compatibilityDate: '2025-07-15',
 

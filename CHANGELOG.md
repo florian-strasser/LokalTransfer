@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.2.1
+
+### Improvements
+
+- **The documentation site loads faster, especially on phones.** Its
+  stylesheet is inlined into each page, the hero's text and buttons animate from
+  the first paint instead of waiting for JavaScript, and the sections below the
+  hero only hydrate once they scroll into view. Images are served at the size
+  they are shown, the product screenshot loads lazily, and the colour tile no
+  longer runs an animation the browser cannot hand to the compositor.
+
 ## v0.2.0
 
 ### Added

@@ -11,23 +11,26 @@
         <!-- `relative`: the card band positions itself against this column — it
             is what gives the band its height, top of the copy to the bottom of
             the buttons, and its horizontal centre. -->
-        <div class="relative w-180 max-w-full text-center mx-auto">
+        <div class="relative w-128 lg:w-176 max-w-full text-center mx-auto">
           <HeroCards :fade="cardsOpacity" />
 
           <SplitText
+            immediate
             as="p"
             text="Self-hosted file transfer"
             :stagger="0.02"
             class="text-sm font-medium text-primary"
           />
           <SplitText
+            immediate
             as="h1"
             text="Send files to clients and let them send files back."
             :delay="0.15"
             :stagger="0.02"
-            class="mt-3 text-4xl font-semibold leading-[1.05] text-balance tracking-tight text-dark sm:text-5xl lg:text-6xl"
+            class="mt-3 text-4xl font-semibold leading-[1.05] tracking-tight text-dark sm:text-5xl lg:text-6xl"
           />
           <SplitText
+            immediate
             as="p"
             by="word"
             text="LokalTransfer is an open-source, self-hosted alternative to WeTransfer. Links expire, the files are really deleted, and nothing touches a third-party service — because it runs on your own server."
@@ -37,6 +40,7 @@
           />
 
           <FadeInBottom
+            immediate
             :delay="1"
             class="mt-8"
           >
@@ -67,11 +71,18 @@
         :style="{ scale, transformOrigin: 'top center' }"
       >
         <div class="overflow-hidden rounded-2xl -translate-y-12">
+          <!-- Below the fold on every screen, so lazy; and sized from the container
+               it fills, so a phone downloads the 640px file rather than the
+               1440px one. -->
           <img
             src="/images/download-page.webp"
+            srcset="/images/download-page-640.webp 640w, /images/download-page-960.webp 960w, /images/download-page.webp 1440w"
+            sizes="(min-width: 72rem) 68rem, (min-width: 40rem) calc(100vw - 4rem), calc(100vw - 3rem)"
             alt="A LokalTransfer download page: the recipient's file list beside the sender's own background image"
             width="1440"
             height="900"
+            loading="lazy"
+            decoding="async"
             class="block h-auto w-full"
           >
         </div>
