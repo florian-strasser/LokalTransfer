@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.2.2
+
+### Improvements
+
+- **Updated preview image on docs and readme.** The preview image contains a new background image that is not cut off by the overlay.
+
 ## v0.2.1
 
 ### Improvements
