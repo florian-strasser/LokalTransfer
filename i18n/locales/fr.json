@@ -149,6 +149,7 @@
     "layoutGallery": "Galerie",
     "background": "Image d'arrière-plan",
     "backgroundHint": "Affichée derrière la page de téléchargement. Remplace l'image par défaut.",
+    "backgroundHintDefault": "Votre arrière-plan par défaut, défini dans les paramètres du compte. Choisissez une autre image pour ce seul transfert, ou retirez-le.",
     "backgroundDropHint": "PNG, JPEG, GIF, WebP ou AVIF",
     "backgroundChoose": "Choisir une image",
     "backgroundChange": "Changer d'image",
@@ -236,6 +237,10 @@
     "confirmPassword": "Répéter le nouveau mot de passe",
     "saved": "Enregistré.",
     "passwordChanged": "Votre mot de passe a été modifié.",
+    "background": "Arrière-plan par défaut",
+    "backgroundHint": "Affiché derrière la page de téléchargement de chaque transfert que vous envoyez, sauf si vous choisissez une autre image pour l'un d'eux. Les transferts déjà envoyés conservent le leur.",
+    "backgroundSaved": "Arrière-plan par défaut enregistré.",
+    "backgroundRemoved": "Arrière-plan par défaut retiré.",
     "errors": {
       "INVALID_CURRENT_PASSWORD": "Ce n'est pas votre mot de passe actuel."
     }

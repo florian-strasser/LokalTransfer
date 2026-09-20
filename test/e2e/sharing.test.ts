@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto'
 import { fileURLToPath } from 'node:url'
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest'
 import { $fetch, setup, url } from '@nuxt/test-utils/e2e'
@@ -361,5 +362,95 @@ describe('gallery previews', () => {
 
     const response = await fetch(url(`/api/download/${transfer.token}/preview/${transfer.fileId}`))
     expect(response.status).toBe(403)
+  })
+})
+
+describe('default background', () => {
+  // Two genuine one-pixel images of different types, so a response's content
+  // type says which of them it is.
+  const PNG = Uint8Array.from([
+    0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0x00, 0x00, 0x00, 0x0D,
+    0x49, 0x48, 0x44, 0x52, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01,
+    0x08, 0x06, 0x00, 0x00, 0x00, 0x1F, 0x15, 0xC4, 0x89, 0x00, 0x00, 0x00,
+    0x0A, 0x49, 0x44, 0x41, 0x54, 0x78, 0x9C, 0x63, 0x00, 0x01, 0x00, 0x00,
+    0x05, 0x00, 0x01, 0x0D, 0x0A, 0x2D, 0xB4, 0x00, 0x00, 0x00, 0x00, 0x49,
+    0x45, 0x4E, 0x44, 0xAE, 0x42, 0x60, 0x82
+  ])
+  const GIF = Uint8Array.from([
+    0x47, 0x49, 0x46, 0x38, 0x39, 0x61, 0x01, 0x00, 0x01, 0x00, 0x80, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0x21, 0xF9, 0x04, 0x01, 0x00,
+    0x00, 0x00, 0x00, 0x2C, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x01, 0x00,
+    0x00, 0x02, 0x02, 0x44, 0x01, 0x00, 0x3B
+  ])
+
+  async function setDefault(cookie: string, bytes: Uint8Array | string, name: string) {
+    const form = new FormData()
+    form.append('background', new Blob([bytes as BlobPart]), name)
+    return await fetch(url('/api/account/background'), { method: 'POST', headers: { cookie }, body: form })
+  }
+
+  async function background(token: string) {
+    const response = await fetch(url(`/api/download/${token}/background`))
+    return { status: response.status, type: response.headers.get('content-type') ?? '' }
+  }
+
+  it('goes on every new transfer, and a transfer keeps the one it was sent with', async () => {
+    const cookie = await signIn(member)
+    expect((await setDefault(cookie, PNG, 'office.png')).status).toBe(200)
+
+    // The client is told where to load it from, never what it is called on disk.
+    const session = await $fetch<{ data: { user: Record<string, unknown> } }>(
+      '/api/auth/get-session',
+      { headers: { cookie } }
+    )
+    expect(session.data.user.background).toMatch(/^\/api\/account\/background\?v=\w+$/)
+    expect(session.data.user.backgroundName).toBeUndefined()
+
+    const first = await sendTransfer(cookie, {}) as Awaited<ReturnType<typeof sendTransfer>> & { hasBackground: boolean }
+    expect(first.hasBackground).toBe(true)
+    expect(await background(first.token)).toEqual({ status: 200, type: 'image/png' })
+
+    // Replacing the default changes what comes next, not what has gone out.
+    expect((await setDefault(cookie, GIF, 'office.gif')).status).toBe(200)
+    const second = await sendTransfer(cookie, {})
+    expect(await background(second.token)).toEqual({ status: 200, type: 'image/gif' })
+    expect(await background(first.token)).toEqual({ status: 200, type: 'image/png' })
+
+    // Nor does removing it: each transfer holds a copy of its own.
+    const removed = await fetch(url('/api/account/background'), { method: 'DELETE', headers: { cookie } })
+    expect(removed.status).toBe(200)
+    expect((await background(first.token)).status).toBe(200)
+    expect((await background(second.token)).status).toBe(200)
+
+    const third = await sendTransfer(cookie, {}) as Awaited<ReturnType<typeof sendTransfer>> & { hasBackground: boolean }
+    expect(third.hasBackground).toBe(false)
+    expect((await background(third.token)).status).toBe(404)
+  })
+
+  it('can be left off a single transfer', async () => {
+    const cookie = await signIn(member)
+    expect((await setDefault(cookie, PNG, 'office.png')).status).toBe(200)
+
+    const transfer = await sendTransfer(cookie, { useDefaultBackground: false })
+    const page = await $fetch<{ data: { hasBackground: boolean } }>(`/api/download/${transfer.token}`)
+    expect(page.data.hasBackground).toBe(false)
+    expect((await background(transfer.token)).status).toBe(404)
+  })
+
+  it('refuses anything that is not an image, and guests', async () => {
+    const cookie = await signIn(member)
+    const disguised = await setDefault(cookie, '<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>', 'office.png')
+    expect(disguised.status).toBe(400)
+    expect(await disguised.json()).toEqual({ error: 'NOT_AN_IMAGE' })
+
+    // Signed in with a session row rather than a magic link: the rate-limit test
+    // above has already spent this test server's allowance of link requests.
+    const guest = await createTestUser({ name: 'Guest', type: 'guest' })
+    const token = randomUUID()
+    await setupDatabase().execute(
+      'INSERT INTO `session` (`id`, `expiresAt`, `token`, `userId`) VALUES (?, ?, ?, ?)',
+      [randomUUID(), new Date(Date.now() + 60 * 60 * 1000), token, guest.id]
+    )
+    expect((await setDefault(`session_token=${token}`, PNG, 'office.png')).status).toBe(403)
   })
 })

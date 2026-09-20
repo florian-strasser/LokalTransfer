@@ -5,6 +5,8 @@ export interface AuthUser {
   role: string
   type: 'member' | 'guest'
   company: string | null
+  /** Where to load the member's default transfer background from, or null. */
+  background: string | null
 }
 
 /**

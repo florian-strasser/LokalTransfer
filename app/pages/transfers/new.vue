@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const { t } = useI18n()
+const { user } = useAuth()
 useSeoMeta({ title: t('compose.title') })
 
 // Set once the composer swaps its form for the result card.
@@ -8,14 +9,17 @@ const sent = ref(false)
 
 <template>
   <div>
-    <!-- The instance's own background, with no `src` — a transfer's own image
-         belongs to its download page, not to the form that produced it.
-         Unwashed, like the download page: this page and that one are the same
-         composition with different content in the card, and a sender who
-         configured a photograph should see the photograph.
+    <!-- The member's default background when they have set one, else the
+         instance's. Unwashed, like the download page: this page and that one are
+         the same composition with different content in the card, so a member
+         sees their pages the way their recipients will. An image picked for a
+         single transfer is not shown here — it belongs to that download page.
          Nothing sits outside the card any more, so there is no loose text left
          for a scrim to protect — the heading moved inside it. -->
-    <AppBackground :scrim="false" />
+    <AppBackground
+      :src="user?.background"
+      :scrim="false"
+    />
 
     <!-- Against the left edge of the layout's container, so the card lines up
          under the logo and leaves the rest of the viewport to the image — the

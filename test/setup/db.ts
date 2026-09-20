@@ -37,6 +37,7 @@ export async function resetState() {
   }
 
   await fs.rm(join(TEST_STORAGE, 'transfers'), { recursive: true, force: true })
+  await fs.rm(join(TEST_STORAGE, 'users'), { recursive: true, force: true })
 }
 
 export interface TestUser {

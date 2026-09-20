@@ -149,6 +149,7 @@
     "layoutGallery": "Galeria",
     "background": "Obraz tła",
     "backgroundHint": "Wyświetlany za stroną pobierania. Zastępuje domyślny.",
+    "backgroundHintDefault": "Twoje domyślne tło z ustawień konta. Wybierz inny obraz tylko dla tego transferu albo je usuń.",
     "backgroundDropHint": "PNG, JPEG, GIF, WebP lub AVIF",
     "backgroundChoose": "Wybierz obraz",
     "backgroundChange": "Zmień obraz",
@@ -236,6 +237,10 @@
     "confirmPassword": "Powtórz nowe hasło",
     "saved": "Zapisano.",
     "passwordChanged": "Hasło zostało zmienione.",
+    "background": "Domyślne tło",
+    "backgroundHint": "Wyświetlane za stroną pobierania każdego wysyłanego przez Ciebie transferu, chyba że dla któregoś wybierzesz inny obraz. Już wysłane transfery zachowują swoje tło.",
+    "backgroundSaved": "Zapisano domyślne tło.",
+    "backgroundRemoved": "Usunięto domyślne tło.",
     "errors": {
       "INVALID_CURRENT_PASSWORD": "To nie jest Twoje obecne hasło."
     }

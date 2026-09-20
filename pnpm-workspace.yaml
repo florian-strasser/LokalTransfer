@@ -39,6 +39,10 @@ overrides:
   svgo@4: ^4.1.0
   # Reached through nuxt, @nuxt/ui, @nuxt/eslint and @nuxtjs/mcp-toolkit.
   hono@4: ^4.13.5
+  # Reached through nuxt, @nuxt/nitro-server and @nuxtjs/i18n, which ask for
+  # ^5.8.2 — the range already allows the fix, the lockfile was simply holding
+  # older resolutions. Pinned so it cannot slip back to them.
+  devalue@<5.9.2: ^5.9.2
   launch-editor@<2.14.1: ^2.14.1
   esbuild@>=0.27.3 <0.28.1: ^0.28.2
   '@babel/core@7': ^7.29.7

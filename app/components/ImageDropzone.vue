@@ -1,6 +1,6 @@
 <script setup lang="ts">
-// A drag-and-drop field for one image, used by the composer to pick a transfer's
-// background.
+// A drag-and-drop field for one image: a transfer's background in the composer,
+// and a member's default background on the account page.
 //
 // Separate from FileDropzone rather than a variant of it: that one manages a
 // queue of uploads with progress and per-file errors, while this holds exactly
@@ -13,10 +13,15 @@ const props = defineProps<{
   label: string
   hint?: string
   removeLabel: string
+  /** An image already in place — a member's saved default — shown while nothing
+      has been picked here. Removing it emits `remove` rather than clearing the
+      model, since there is no file to clear. */
+  src?: string | null
 }>()
 
 const emit = defineEmits<{
   'update:modelValue': [file: File | null]
+  'remove': []
 }>()
 
 const input = ref<HTMLInputElement | null>(null)
@@ -41,6 +46,10 @@ function setPreview(file: File | null) {
 watch(() => props.modelValue, file => setPreview(file), { immediate: true })
 onBeforeUnmount(() => setPreview(null))
 
+// A file picked here outranks the image already in place, which shows through
+// again once the pick is removed.
+const shown = computed(() => preview.value ?? props.src ?? null)
+
 function accept(file: File | undefined) {
   if (props.disabled || !file) return
   // Anything that isn't an image is ignored rather than reported: the server
@@ -63,7 +72,8 @@ function onSelect(event: Event) {
 }
 
 function clear() {
-  emit('update:modelValue', null)
+  if (props.modelValue) emit('update:modelValue', null)
+  else emit('remove')
   if (input.value) input.value.value = ''
 }
 </script>
@@ -84,11 +94,11 @@ function clear() {
     <!-- Once an image is chosen it *is* the field: a thumbnail beside a button
          says less about what the recipient will see than the picture itself. -->
     <div
-      v-if="preview"
+      v-if="shown"
       class="relative"
     >
       <img
-        :src="preview"
+        :src="shown"
         alt=""
         class="block h-28 w-full object-cover"
       >

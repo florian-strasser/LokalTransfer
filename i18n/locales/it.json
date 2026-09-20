@@ -149,6 +149,7 @@
     "layoutGallery": "Galleria",
     "background": "Immagine di sfondo",
     "backgroundHint": "Mostrata dietro la pagina di download. Sostituisce quella predefinita.",
+    "backgroundHintDefault": "Il suo sfondo predefinito dalle impostazioni dell'account. Scelga un'altra immagine solo per questo trasferimento, oppure lo rimuova.",
     "backgroundDropHint": "PNG, JPEG, GIF, WebP o AVIF",
     "backgroundChoose": "Scegli immagine",
     "backgroundChange": "Cambia immagine",
@@ -236,6 +237,10 @@
     "confirmPassword": "Ripeti la nuova password",
     "saved": "Salvato.",
     "passwordChanged": "La password è stata cambiata.",
+    "background": "Sfondo predefinito",
+    "backgroundHint": "Mostrato dietro la pagina di download di ogni trasferimento che invia, a meno che non scelga un'altra immagine per uno di essi. I trasferimenti già inviati mantengono il proprio.",
+    "backgroundSaved": "Sfondo predefinito salvato.",
+    "backgroundRemoved": "Sfondo predefinito rimosso.",
     "errors": {
       "INVALID_CURRENT_PASSWORD": "Questa non è la sua password attuale."
     }

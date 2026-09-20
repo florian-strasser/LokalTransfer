@@ -149,6 +149,7 @@
     "layoutGallery": "Galerie",
     "background": "Obrázek pozadí",
     "backgroundHint": "Zobrazí se za stránkou ke stažení. Nahrazuje výchozí.",
+    "backgroundHintDefault": "Vaše výchozí pozadí z nastavení účtu. Vyberte jiný obrázek jen pro tento přenos, nebo ho odeberte.",
     "backgroundDropHint": "PNG, JPEG, GIF, WebP nebo AVIF",
     "backgroundChoose": "Vybrat obrázek",
     "backgroundChange": "Změnit obrázek",
@@ -236,6 +237,10 @@
     "confirmPassword": "Zopakujte nové heslo",
     "saved": "Uloženo.",
     "passwordChanged": "Vaše heslo bylo změněno.",
+    "background": "Výchozí pozadí",
+    "backgroundHint": "Zobrazí se za stránkou ke stažení každého přenosu, který odešlete, pokud pro některý nevyberete jiný obrázek. Již odeslané přenosy si ponechají své.",
+    "backgroundSaved": "Výchozí pozadí uloženo.",
+    "backgroundRemoved": "Výchozí pozadí odebráno.",
     "errors": {
       "INVALID_CURRENT_PASSWORD": "Toto není vaše současné heslo."
     }

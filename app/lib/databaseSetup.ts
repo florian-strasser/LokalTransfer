@@ -311,6 +311,20 @@ const migrations: Migration[] = [
         'ALTER TABLE `transfers` ADD COLUMN `expiryWarningSentAt` timestamp NULL DEFAULT NULL'
       )
     }
+  },
+
+  {
+    // A member's default background: one image of their own that every transfer
+    // they send carries unless it is given another. The file lives in the
+    // member's own storage directory and `backgroundName` is its stored name;
+    // each transfer gets its own copy when it is created, so this column is only
+    // ever read at that moment and by the account page.
+    // Added conditionally, for the same reason as 0002 and 0004.
+    id: '0005_user_background',
+    up: async (db) => {
+      if (await columnExists(db, 'user', 'backgroundName')) return
+      await db.execute('ALTER TABLE `user` ADD COLUMN `backgroundName` varchar(255) DEFAULT NULL')
+    }
   }
 ]
 

@@ -149,6 +149,7 @@
     "layoutGallery": "Galerie",
     "background": "Hintergrundbild",
     "backgroundHint": "Wird hinter der Download-Seite angezeigt. Überschreibt die Voreinstellung.",
+    "backgroundHintDefault": "Ihre Voreinstellung aus den Kontoeinstellungen. Wählen Sie ein anderes Bild nur für diese Übertragung oder entfernen Sie es.",
     "backgroundDropHint": "PNG, JPEG, GIF, WebP oder AVIF",
     "backgroundChoose": "Bild wählen",
     "backgroundChange": "Bild ändern",
@@ -236,6 +237,10 @@
     "confirmPassword": "Neues Passwort wiederholen",
     "saved": "Gespeichert.",
     "passwordChanged": "Ihr Passwort wurde geändert.",
+    "background": "Standard-Hintergrund",
+    "backgroundHint": "Wird hinter der Download-Seite jeder Übertragung angezeigt, die Sie senden – es sei denn, Sie wählen für eine ein anderes Bild. Bereits gesendete Übertragungen behalten ihren.",
+    "backgroundSaved": "Standard-Hintergrund gespeichert.",
+    "backgroundRemoved": "Standard-Hintergrund entfernt.",
     "errors": {
       "INVALID_CURRENT_PASSWORD": "Das ist nicht Ihr aktuelles Passwort."
     }

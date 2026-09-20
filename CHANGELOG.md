@@ -2,9 +2,23 @@
 
 ## v0.2.2
 
+### Added
+
+- **A default background per member.** Set once under *Account*, it goes behind
+  the download page of every transfer the member sends — from the web
+  interface, the REST API and the MCP server — unless they pick another image
+  for one or remove it in the composer. The compose page shows it too. Each
+  transfer keeps the background it was sent with, so replacing the default only
+  changes what comes next.
+
 ### Improvements
 
 - **Updated preview image on docs and readme.** The preview image contains a new background image that is not cut off by the overlay.
+
+### Security
+
+- **Cleared a Dependabot alert in devalue**, reached through Nuxt: a
+  denial of service from malformed input to `devalue.parse`, fixed in 5.9.2.
 
 ## v0.2.1
 

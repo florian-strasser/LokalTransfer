@@ -102,6 +102,15 @@ const layout = ref<'list' | 'gallery'>('list')
 // they picked, which made the widget unreadable over a busy photograph.
 const background = ref<File | null>(null)
 
+// The member's default background from their account settings, pre-filled so the
+// transfer carries it. Picking another image replaces it for this transfer;
+// removing it here leaves this one transfer without it and the default itself
+// untouched.
+const auth = useAuth()
+const useDefaultBackground = ref(true)
+const defaultBackground = computed(() =>
+  (isMember.value && useDefaultBackground.value ? auth.user.value?.background ?? null : null))
+
 // Mirrors RETENTION_OPTIONS on the server; 0 is the unlimited option.
 const retentionOptions = computed(() =>
   [1, 3, 7, 14, 30, 60, 90, 0].map(days => ({
@@ -122,7 +131,7 @@ const optionsSummary = computed(() => {
   const parts: string[] = []
   if (password.value) parts.push(t('compose.optionPassword'))
   if (layout.value === 'gallery') parts.push(t('compose.layoutGallery'))
-  if (background.value) parts.push(t('compose.optionBackground'))
+  if (background.value || defaultBackground.value) parts.push(t('compose.optionBackground'))
   return parts.join(' · ')
 })
 
@@ -166,7 +175,8 @@ async function submit() {
           retentionDays: retentionDays.value,
           password: password.value || null,
           layout: layout.value,
-          background: background.value
+          background: background.value,
+          useDefaultBackground: useDefaultBackground.value
         })
   })
 }
@@ -180,6 +190,7 @@ function startAnother() {
   password.value = ''
   layout.value = 'list'
   background.value = null
+  useDefaultBackground.value = true
   showOptions.value = false
 }
 
@@ -466,14 +477,16 @@ const progressLabel = computed(() => {
 
         <UFormField
           :label="t('compose.background')"
-          :description="t('compose.backgroundHint')"
+          :description="auth.user.value?.background ? t('compose.backgroundHintDefault') : t('compose.backgroundHint')"
         >
           <ImageDropzone
             v-model="background"
+            :src="defaultBackground"
             :label="t('compose.backgroundChoose')"
             :hint="t('compose.backgroundDropHint')"
             :remove-label="t('compose.backgroundRemove')"
             :disabled="upload.isBusy.value"
+            @remove="useDefaultBackground = false"
           />
         </UFormField>
       </div>

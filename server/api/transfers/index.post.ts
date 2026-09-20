@@ -138,7 +138,7 @@ export default defineEventHandler(async (event) => {
       }
     }
 
-    const { transferId, token, expiresAt } = await createTransferDraft(db, {
+    const { transferId, token, expiresAt, hasBackground } = await createTransferDraft(db, {
       user: auth.user,
       kind: isGuest ? 'guest' : 'outgoing',
       subject,
@@ -146,7 +146,11 @@ export default defineEventHandler(async (event) => {
       retentionDays: requestedRetention,
       layout,
       passwordHash,
-      recipients
+      recipients,
+      // The member's default background goes on unless this is explicitly
+      // `false` — so an API client that knows nothing about it gets the same
+      // page as the web interface.
+      useDefaultBackground: body?.useDefaultBackground !== false
     })
 
     return {
@@ -161,6 +165,7 @@ export default defineEventHandler(async (event) => {
         layout,
         // The password itself is never echoed back — only whether one is set.
         hasPassword: passwordHash !== null,
+        hasBackground,
         recipients: recipients.map(r => ({ email: r.email, name: r.name }))
       }
     }

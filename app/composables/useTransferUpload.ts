@@ -26,10 +26,18 @@ export interface SubmitPayload {
   /** How the download page presents the files. */
   layout?: 'list' | 'gallery'
   /**
-   * Optional per-transfer background image, overriding the instance default.
-   * Uploaded separately after the draft exists, since it needs a transfer id.
+   * Optional per-transfer background image, replacing the member's default and
+   * the instance's. Uploaded separately after the draft exists, since it needs a
+   * transfer id.
    */
   background?: File | null
+  /**
+   * Whether the member's default background from their account settings goes on
+   * the transfer. On unless they removed it in the composer; a `background`
+   * above replaces it either way, so a failed upload of that one still leaves
+   * the default rather than nothing.
+   */
+  useDefaultBackground?: boolean
 }
 
 export interface TransferResult {

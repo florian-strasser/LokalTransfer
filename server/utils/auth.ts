@@ -17,6 +17,8 @@ export interface SessionUser {
   role: string
   type: UserType
   company: string | null
+  /** Stored name of the member's default background, if they have set one. */
+  backgroundName?: string | null
 }
 
 /**
@@ -122,7 +124,7 @@ export async function resolveSessionToken(sessionToken: unknown): Promise<Sessio
   if (!session) return { status: 'invalid' }
 
   const [users] = await db.execute<RowDataPacket[]>(
-    'SELECT id, name, email, role, type, company, banned FROM `user` WHERE `id` = ?',
+    'SELECT id, name, email, role, type, company, backgroundName, banned FROM `user` WHERE `id` = ?',
     [session.userId]
   )
   const user = users[0]
@@ -144,7 +146,8 @@ export async function resolveSessionToken(sessionToken: unknown): Promise<Sessio
       email: user.email,
       role: user.role,
       type: user.type || 'member',
-      company: user.company || null
+      company: user.company || null,
+      backgroundName: user.backgroundName || null
     }
   }
 }
@@ -201,7 +204,7 @@ export async function getApiKeyUser(event: H3Event): Promise<ApiKeyIdentity | nu
     if (key.expiresAt && new Date(key.expiresAt).getTime() <= Date.now()) return null
 
     const [users] = await db.execute<RowDataPacket[]>(
-      'SELECT id, name, email, role, type, company, banned FROM `user` WHERE `id` = ?',
+      'SELECT id, name, email, role, type, company, backgroundName, banned FROM `user` WHERE `id` = ?',
       [key.userId]
     )
     const user = users[0]
@@ -232,7 +235,8 @@ export async function getApiKeyUser(event: H3Event): Promise<ApiKeyIdentity | nu
         email: user.email,
         role: user.role,
         type: user.type || 'member',
-        company: user.company || null
+        company: user.company || null,
+        backgroundName: user.backgroundName || null
       }
     }
   } catch (error) {

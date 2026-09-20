@@ -1,13 +1,15 @@
 <script setup lang="ts">
 // The full-bleed background behind the composer, the download page and sign-in.
 //
-// Two sources, in order: a per-transfer image the sender uploaded, else the
-// instance default from NUXT_PUBLIC_BACKGROUND_IMAGE. With neither, the page
+// Two sources, in order: an image of the page's own — a transfer's background,
+// or on the compose page the member's default — else the instance default from
+// NUXT_PUBLIC_BACKGROUND_IMAGE. With neither, the page
 // falls back to the plain themed background and nothing here renders.
 const props = withDefaults(defineProps<{
   /**
-   * A transfer's own background URL, when the page has one. Takes precedence
-   * over the instance default.
+   * The page's own background URL, when it has one: a transfer's background,
+   * or the member's default on the compose page. Takes precedence over the
+   * instance default.
    */
   src?: string | null
   /**

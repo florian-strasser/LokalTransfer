@@ -9,6 +9,7 @@ import {
   renderTransferEmail
 } from './emailTemplates'
 import { generateTransferToken, loadTransferFiles, loadTransferRecipients } from './transfers'
+import { applyDefaultBackground } from './userBackground'
 import { retentionToExpiry } from './validation'
 import { logger } from './logger'
 
@@ -38,6 +39,9 @@ export interface CreateTransferDraftOptions {
   layout: string
   passwordHash: string | null
   recipients: TransferRecipientInput[]
+  /** Whether the sender's default background goes on the transfer. On unless
+      asked otherwise; only outgoing transfers from a member ever carry one. */
+  useDefaultBackground?: boolean
 }
 
 /**
@@ -50,10 +54,11 @@ export interface CreateTransferDraftOptions {
 export async function createTransferDraft(
   db: Pool,
   options: CreateTransferDraftOptions
-): Promise<{ transferId: number, token: string, expiresAt: Date | null }> {
+): Promise<{ transferId: number, token: string, expiresAt: Date | null, hasBackground: boolean }> {
   const token = generateTransferToken()
   const expiresAt = retentionToExpiry(options.retentionDays)
 
+  let transferId: number
   const conn = await db.getConnection()
   try {
     await conn.beginTransaction()
@@ -76,7 +81,7 @@ export async function createTransferDraft(
         options.layout
       ]
     )
-    const transferId = Number(result.insertId)
+    transferId = Number(result.insertId)
 
     for (const recipient of options.recipients) {
       await conn.execute(
@@ -86,13 +91,20 @@ export async function createTransferDraft(
     }
 
     await conn.commit()
-    return { transferId, token, expiresAt }
   } catch (error) {
     await conn.rollback()
     throw error
   } finally {
     conn.release()
   }
+
+  // After the commit and outside it: file work has no place holding a database
+  // connection, and a background that fails to apply must not undo the draft.
+  const hasBackground = options.kind === 'outgoing' && options.useDefaultBackground !== false
+    ? await applyDefaultBackground(db, transferId, options.user)
+    : false
+
+  return { transferId, token, expiresAt, hasBackground }
 }
 
 // A send either goes through or fails for one of a handful of reasons the caller

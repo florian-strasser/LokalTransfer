@@ -1,6 +1,7 @@
 import type { RowDataPacket } from 'mysql2'
 import { setupDatabase } from '../../../../app/lib/databaseSetup'
 import { fail, requireAdmin } from '../../../utils/auth'
+import { removeUserDir } from '../../../utils/storage'
 import { deleteTransfers } from '../../../utils/transfers'
 import { logger } from '../../../utils/logger'
 
@@ -41,6 +42,9 @@ export default defineEventHandler(async (event) => {
       [userId]
     )
     await deleteTransfers(db, transfers.map((row: RowDataPacket) => Number(row.id)), event)
+    // Their default background, which no transfer needs any more: every
+    // transfer that carried it had its own copy, and those went just now.
+    await removeUserDir(userId, event)
 
     const conn = await db.getConnection()
     try {

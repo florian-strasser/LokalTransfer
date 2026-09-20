@@ -149,6 +149,7 @@
     "layoutGallery": "Galerij",
     "background": "Achtergrondafbeelding",
     "backgroundHint": "Wordt achter de downloadpagina getoond. Vervangt de standaardafbeelding.",
+    "backgroundHintDefault": "Uw standaardachtergrond uit de accountinstellingen. Kies een andere afbeelding voor alleen deze overdracht, of verwijder hem.",
     "backgroundDropHint": "PNG, JPEG, GIF, WebP of AVIF",
     "backgroundChoose": "Afbeelding kiezen",
     "backgroundChange": "Afbeelding wijzigen",
@@ -236,6 +237,10 @@
     "confirmPassword": "Herhaal nieuw wachtwoord",
     "saved": "Opgeslagen.",
     "passwordChanged": "Uw wachtwoord is gewijzigd.",
+    "background": "Standaardachtergrond",
+    "backgroundHint": "Wordt achter de downloadpagina getoond van elke overdracht die u verstuurt, tenzij u voor een overdracht een andere afbeelding kiest. Al verstuurde overdrachten behouden hun eigen achtergrond.",
+    "backgroundSaved": "Standaardachtergrond opgeslagen.",
+    "backgroundRemoved": "Standaardachtergrond verwijderd.",
     "errors": {
       "INVALID_CURRENT_PASSWORD": "Dat is niet uw huidige wachtwoord."
     }

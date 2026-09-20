@@ -149,6 +149,7 @@
     "layoutGallery": "Gallery",
     "background": "Background image",
     "backgroundHint": "Shown behind the download page. Overrides the default.",
+    "backgroundHintDefault": "Your default from the account settings. Choose another image for this transfer only, or remove it.",
     "backgroundDropHint": "PNG, JPEG, GIF, WebP or AVIF",
     "backgroundChoose": "Choose image",
     "backgroundChange": "Change image",
@@ -236,6 +237,10 @@
     "confirmPassword": "Repeat new password",
     "saved": "Saved.",
     "passwordChanged": "Your password has been changed.",
+    "background": "Default background",
+    "backgroundHint": "Shown behind the download page of every transfer you send, unless you choose another image for one. Transfers you have already sent keep theirs.",
+    "backgroundSaved": "Default background saved.",
+    "backgroundRemoved": "Default background removed.",
     "errors": {
       "INVALID_CURRENT_PASSWORD": "That isn't your current password."
     }
