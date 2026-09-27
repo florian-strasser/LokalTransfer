@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { Link2Off, LoaderCircle } from 'lucide-vue-next'
+
 definePageMeta({ layout: 'blank' })
 
 const { t } = useI18n()
@@ -35,9 +37,9 @@ onMounted(async () => {
         v-if="!failed"
         class="flex flex-col items-center gap-4 text-muted"
       >
-        <UIcon
-          name="i-lucide-loader-circle"
+        <LoaderCircle
           class="size-8 animate-spin"
+          aria-hidden="true"
         />
         <p>{{ t('magic.verifying') }}</p>
       </div>
@@ -47,9 +49,9 @@ onMounted(async () => {
         class="space-y-6"
       >
         <div class="space-y-2">
-          <UIcon
-            name="i-lucide-link-2-off"
+          <Link2Off
             class="size-10 text-dimmed"
+            aria-hidden="true"
           />
           <h1 class="text-xl font-semibold text-highlighted">
             {{ t('magic.failed') }}
@@ -59,7 +61,7 @@ onMounted(async () => {
           </p>
         </div>
 
-        <UButton
+        <AppButton
           to="/"
           :label="t('magic.requestNew')"
         />

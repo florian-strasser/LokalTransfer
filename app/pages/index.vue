@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { Mail, MailCheck, User } from 'lucide-vue-next'
+
 definePageMeta({ layout: 'blank' })
 
 const { t } = useI18n()
@@ -77,132 +79,117 @@ async function requestMagicLink() {
          off-centre and told anyone who found the URL what software the server
          runs — which is the same reason there is no header. -->
     <div class="mx-auto max-w-md">
-      <UCard :ui="{ root: 'bg-default/90 backdrop-blur-md' }">
-        <UTabs
-          v-model="tab"
-          :items="[
-            { label: t('login.tabMember'), value: 'member', icon: 'i-lucide-user' },
-            { label: t('login.tabGuest'), value: 'guest', icon: 'i-lucide-mail' }
-          ]"
-          :ui="{ root: 'gap-6' }"
-        >
-          <template #content="{ item }">
-            <form
-              v-if="item.value === 'member'"
+      <ContentBox translucent>
+        <div class="space-y-6">
+          <SegmentedControl
+            v-model="tab"
+            :items="[
+              { label: t('login.tabMember'), value: 'member', icon: User },
+              { label: t('login.tabGuest'), value: 'guest', icon: Mail }
+            ]"
+          />
+
+          <form
+            v-if="tab === 'member'"
+            class="space-y-4"
+            @submit.prevent="signIn"
+          >
+            <FormField :label="t('common.email')">
+              <input
+                v-model="email"
+                type="email"
+                autocomplete="username"
+                required
+                class="form-control"
+              >
+            </FormField>
+
+            <FormField :label="t('common.password')">
+              <input
+                v-model="password"
+                type="password"
+                autocomplete="current-password"
+                required
+                class="form-control"
+              >
+            </FormField>
+
+            <AppAlert
+              v-if="errorMessage"
+              :description="errorMessage"
+            />
+
+            <AppButton
+              type="submit"
+              :label="t('login.submit')"
+              :loading="loading"
+              block
+              size="lg"
+            />
+
+            <div class="text-center">
+              <NuxtLink
+                to="/lost-password"
+                class="text-sm text-muted transition-colors hover:text-default"
+              >
+                {{ t('login.forgotPassword') }}
+              </NuxtLink>
+            </div>
+          </form>
+
+          <div v-else>
+            <div
+              v-if="linkSent"
               class="space-y-4"
-              @submit.prevent="signIn"
             >
-              <UFormField
-                :label="t('common.email')"
-                name="email"
-              >
-                <UInput
-                  v-model="email"
+              <AppAlert
+                :icon="MailCheck"
+                :description="t('login.linkSent')"
+              />
+              <AppButton
+                :label="t('common.back')"
+                color="neutral"
+                variant="ghost"
+                block
+                @click="linkSent = false"
+              />
+            </div>
+
+            <form
+              v-else
+              class="space-y-4"
+              @submit.prevent="requestMagicLink"
+            >
+              <p class="text-sm text-muted">
+                {{ t('login.guestIntro') }}
+              </p>
+
+              <FormField :label="t('common.email')">
+                <input
+                  v-model="guestEmail"
                   type="email"
-                  autocomplete="username"
+                  autocomplete="email"
                   required
-                  class="w-full"
-                />
-              </UFormField>
+                  class="form-control"
+                >
+              </FormField>
 
-              <UFormField
-                :label="t('common.password')"
-                name="password"
-              >
-                <UInput
-                  v-model="password"
-                  type="password"
-                  autocomplete="current-password"
-                  required
-                  class="w-full"
-                />
-              </UFormField>
-
-              <UAlert
+              <AppAlert
                 v-if="errorMessage"
-                icon="i-lucide-circle-alert"
-                variant="subtle"
                 :description="errorMessage"
               />
 
-              <UButton
+              <AppButton
                 type="submit"
-                :label="t('login.submit')"
+                :label="t('login.requestLink')"
                 :loading="loading"
                 block
                 size="lg"
               />
-
-              <div class="text-center">
-                <ULink
-                  to="/lost-password"
-                  class="text-sm text-muted hover:text-default"
-                >
-                  {{ t('login.forgotPassword') }}
-                </ULink>
-              </div>
             </form>
-
-            <div v-else>
-              <div
-                v-if="linkSent"
-                class="space-y-4"
-              >
-                <UAlert
-                  icon="i-lucide-mail-check"
-                  variant="subtle"
-                  :description="t('login.linkSent')"
-                />
-                <UButton
-                  :label="t('common.back')"
-                  color="neutral"
-                  variant="ghost"
-                  block
-                  @click="linkSent = false"
-                />
-              </div>
-
-              <form
-                v-else
-                class="space-y-4"
-                @submit.prevent="requestMagicLink"
-              >
-                <p class="text-sm text-muted">
-                  {{ t('login.guestIntro') }}
-                </p>
-
-                <UFormField
-                  :label="t('common.email')"
-                  name="guestEmail"
-                >
-                  <UInput
-                    v-model="guestEmail"
-                    type="email"
-                    autocomplete="email"
-                    required
-                    class="w-full"
-                  />
-                </UFormField>
-
-                <UAlert
-                  v-if="errorMessage"
-                  icon="i-lucide-circle-alert"
-                  variant="subtle"
-                  :description="errorMessage"
-                />
-
-                <UButton
-                  type="submit"
-                  :label="t('login.requestLink')"
-                  :loading="loading"
-                  block
-                  size="lg"
-                />
-              </form>
-            </div>
-          </template>
-        </UTabs>
-      </UCard>
+          </div>
+        </div>
+      </ContentBox>
 
       <p class="mt-6 text-center text-xs text-dimmed">
         {{ t('login.noSignup') }}

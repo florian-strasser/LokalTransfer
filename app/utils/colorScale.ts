@@ -1,7 +1,7 @@
 // Derive a full 50–950 colour ramp from a single hex value.
 //
-// Nuxt UI expects an eleven-step scale per colour (`--ui-color-primary-50` …
-// `-950`) and resolves `--ui-primary` to step 500 in light mode and step 400 in
+// The stylesheet reads an eleven-step scale per colour (`--color-brand-50` …
+// `-950`) and resolves the accent to step 500 in light mode and step 400 in
 // dark mode. The instance is configured with just one hex per mode, so the rest
 // of the ramp is generated here instead of being hand-picked.
 //
@@ -13,9 +13,9 @@
 // and lose gamut precision.
 
 // Lightness targets lifted from Tailwind 4's own ramps. These have to match:
-// Nuxt UI hard-codes which shade fills which role (`--ui-bg` in dark mode is
-// neutral-900, borders are neutral-200, and so on), so a ramp that is lighter or
-// darker than Tailwind's at a given step quietly breaks its contrast choices.
+// main.css picks which shade fills which role by those ramps (borders are
+// greyscale-200, muted text greyscale-500, and so on), so a ramp that is lighter
+// or darker than Tailwind's at a given step quietly breaks its contrast.
 const LIGHTNESS = [0.985, 0.97, 0.922, 0.87, 0.708, 0.556, 0.439, 0.371, 0.269, 0.205, 0.145]
 
 // Chroma per step, relative to the chroma at shade 500. Saturation peaks around
@@ -81,7 +81,7 @@ function format({ l, c, h }: Oklch): string {
 export interface ScaleOptions {
   /**
    * Which step the supplied hex should land on verbatim. Light mode resolves
-   * `--ui-primary` to 500 and dark mode to 400, so anchoring per mode means the
+   * the accent to 500 and dark mode to 400, so anchoring per mode means the
    * exact configured colour is what actually shows up on a button.
    */
   anchor?: 400 | 500
@@ -160,11 +160,10 @@ export function buildColorScale(
  * Emit the ramp as CSS custom property declarations for one Tailwind palette.
  *
  * The name is the *palette* (`brand`, `greyscale`), producing `--color-brand-500`
- * and so on. That is deliberately not `--ui-color-primary-500`: Nuxt UI owns
- * those and defines each as `var(--color-<palette>-<shade>)` based on
- * app.config.ts. Redefining the palette therefore flows through to every role
- * mapped to it, whereas writing the `--ui-color-*` variables directly would be
- * overwritten by Nuxt UI's own colour plugin.
+ * and so on — the same names as the fallback ramps in main.css, which these
+ * replace. Every colour role there (`--lt-primary`, `--lt-text-muted`, …) is
+ * one shade of one palette, so redefining the palette flows through to all of
+ * them.
  */
 export function scaleToCssVars(name: string, scale: Record<number, string>): string {
   return STEPS

@@ -70,9 +70,8 @@
         <div
           class="mt-12 flex flex-wrap justify-between gap-x-6 gap-y-2 border-t border-gray/15 pt-6"
         >
-          <p>© {{ year }} LokalTransfer · MIT licensed</p>
           <p>
-            Made with ♥ by
+            © {{ year }}
             <a
               href="https://www.florian-strasser.de"
               target="_blank"
@@ -80,6 +79,24 @@
               class="transition-colors hover:text-primary"
             >Florian Strasser</a>
           </p>
+
+          <!-- The legal pages live down here rather than in a column of their
+               own: they are the footer's smallest print, and the column they
+               used to hold now carries the other apps. -->
+          <nav class="flex flex-wrap gap-x-6 gap-y-2">
+            <NuxtLink
+              to="/privacy-policy"
+              class="transition-colors hover:text-primary"
+            >
+              Privacy policy
+            </NuxtLink>
+            <NuxtLink
+              to="/site-notice"
+              class="transition-colors hover:text-primary"
+            >
+              Site notice
+            </NuxtLink>
+          </nav>
         </div>
       </div>
     </div>
@@ -87,11 +104,11 @@
 </template>
 
 <script setup lang="ts">
-// Everything the footer links to, in the same three groups as LokalBoards: the
-// homepage's sections, the rest of the site, and the legal pages. A link is either
-// internal (`to`) or external (`href`); nothing here is a route that does not
-// exist. Docker Hub stands where LokalBoards has its changelog, which this site
-// does not have.
+// Everything the footer's columns link to: the homepage's sections, the rest of
+// the site, and the other apps. A link is either internal (`to`) or external
+// (`href`); nothing here is a route that does not exist. Docker Hub stands where
+// LokalBoards has its changelog, which this site does not have. The legal pages
+// are not a column — they sit in the bar below, where the smallest print goes.
 const columns = [
   {
     title: 'Menu',
@@ -112,10 +129,12 @@ const columns = [
     ]
   },
   {
-    title: 'Legal',
+    // The other two apps, newest first — the same list their own footers carry,
+    // so the three sites cross-reference each other the same way round.
+    title: 'Other apps',
     links: [
-      { label: 'Privacy policy', to: '/privacy-policy' },
-      { label: 'Site notice', to: '/site-notice' }
+      { label: 'LokalBoards', href: 'https://lokalboards.com' },
+      { label: 'Chesstics', href: 'https://chesstics.app' }
     ]
   }
 ]

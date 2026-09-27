@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { Clock, Download, FileIcon, FolderArchive, Link2Off, LockIcon } from 'lucide-vue-next'
+
 // The public download page. No account, no session — the token in the URL is the
 // credential, because recipients are people who have never heard of this app.
 //
@@ -115,9 +117,9 @@ const otherFiles = computed(() => files.value.filter(file => !file.isImage))
       v-if="error || !transfer"
       class="max-w-md rounded-2xl border border-default bg-default p-8 text-center shadow-xl"
     >
-      <UIcon
-        name="i-lucide-link-2-off"
+      <Link2Off
         class="size-10 text-dimmed"
+        aria-hidden="true"
       />
       <h1 class="mt-3 text-xl font-semibold text-highlighted">
         {{ t('download.notFound') }}
@@ -133,9 +135,9 @@ const otherFiles = computed(() => files.value.filter(file => !file.isImage))
       class="max-w-sm rounded-2xl border border-default bg-default p-8 shadow-xl"
     >
       <div class="text-center">
-        <UIcon
-          name="i-lucide-lock"
+        <LockIcon
           class="size-9 text-dimmed"
+          aria-hidden="true"
         />
         <h1 class="mt-3 text-lg font-semibold text-highlighted">
           {{ t('download.locked') }}
@@ -149,23 +151,21 @@ const otherFiles = computed(() => files.value.filter(file => !file.isImage))
         class="mt-6 space-y-3"
         @submit.prevent="unlock"
       >
-        <UInput
+        <input
           v-model="password"
           type="password"
           autocomplete="off"
           autofocus
           :placeholder="t('download.password')"
-          class="w-full"
-        />
+          class="form-control"
+        >
 
-        <UAlert
+        <AppAlert
           v-if="unlockError"
-          icon="i-lucide-circle-alert"
-          variant="subtle"
           :description="unlockError"
         />
 
-        <UButton
+        <AppButton
           type="submit"
           :label="t('download.unlock')"
           :loading="unlocking"
@@ -189,9 +189,9 @@ const otherFiles = computed(() => files.value.filter(file => !file.isImage))
                an arbitrary photograph. Leading with it also puts the deadline
                first, which is the thing a recipient has to act on. -->
           <p class="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
-            <UIcon
-              name="i-lucide-clock"
+            <Clock
               class="size-4 shrink-0"
+              aria-hidden="true"
             />
             <template v-if="transfer.expiresAt">
               {{ t('download.expires', { date: formatDateTime(transfer.expiresAt) }) }}
@@ -228,12 +228,12 @@ const otherFiles = computed(() => files.value.filter(file => !file.isImage))
               }, files.length) }}
             </span>
 
-            <UButton
+            <AppButton
               v-if="files.length > 1"
               :to="zipUrl"
               external
               :label="t('download.downloadAll')"
-              icon="i-lucide-folder-archive"
+              :icon="FolderArchive"
             />
           </div>
         </div>
@@ -267,9 +267,9 @@ const otherFiles = computed(() => files.value.filter(file => !file.isImage))
                   class="absolute inset-x-0 bottom-0 flex items-center justify-between gap-2 bg-black/60 px-2 py-1.5 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100"
                 >
                   <span class="truncate">{{ file.filename }}</span>
-                  <UIcon
-                    name="i-lucide-download"
+                  <Download
                     class="size-4 shrink-0"
+                    aria-hidden="true"
                   />
                 </span>
               </a>
@@ -295,9 +295,9 @@ const otherFiles = computed(() => files.value.filter(file => !file.isImage))
               :key="file.id"
               class="flex items-center gap-3 py-3 first:pt-0 last:pb-0"
             >
-              <UIcon
-                name="i-lucide-file"
+              <FileIcon
                 class="size-5 shrink-0 text-dimmed"
+                aria-hidden="true"
               />
 
               <div class="min-w-0 flex-1">
@@ -309,10 +309,10 @@ const otherFiles = computed(() => files.value.filter(file => !file.isImage))
                 </p>
               </div>
 
-              <UButton
+              <AppButton
                 :to="fileUrl(file.id)"
                 external
-                icon="i-lucide-download"
+                :icon="Download"
                 color="neutral"
                 variant="subtle"
                 size="sm"

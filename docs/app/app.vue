@@ -8,5 +8,9 @@
       <NuxtPage class="grow" />
       <AppFooter />
     </SmoothScroll>
+
+    <!-- Last, and above everything: it covers the screen while one page is
+         swapped for the next. -->
+    <PageCurtain />
   </div>
 </template>

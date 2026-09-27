@@ -248,6 +248,27 @@ describe('guest drop-off', () => {
     expect(rows[0]!.retentionDays).toBe(Number(testServerEnv.NUXT_DEFAULT_RETENTION_DAYS))
   })
 
+  it('fills the picker when the guest page is loaded directly', async () => {
+    // The picker used to be fetched with a bare `$fetch`, which goes out without
+    // the session cookie while the page is server-rendered: the list came back
+    // 401 and a guest who reloaded /send had nobody to send to. It only worked
+    // when the page was reached by navigating inside the app.
+    //
+    // Signed in with a session row rather than a magic link, which are rate
+    // limited per IP and are spent elsewhere in this file.
+    const guest = await createTestUser({ type: 'guest', name: 'Agency Client' })
+    const token = randomUUID()
+    await setupDatabase().execute(
+      'INSERT INTO `session` (`id`, `expiresAt`, `token`, `userId`) VALUES (?, ?, ?, ?)',
+      [randomUUID(), new Date(Date.now() + 60 * 60 * 1000), token, guest.id]
+    )
+
+    const page = await fetch(url('/send'), { headers: { cookie: `session_token=${token}` } })
+    expect(page.status).toBe(200)
+    // The colleagues arrive in the page's payload, ready for the picker.
+    expect(await page.text()).toContain(member.email)
+  })
+
   // The restrictions share one guest session on purpose. Magic links are rate
   // limited to five per quarter hour per IP — correctly, since the endpoint mails
   // whoever is named — and every test here comes from 127.0.0.1. Signing in once

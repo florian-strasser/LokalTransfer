@@ -108,7 +108,7 @@ async function savePassword() {
     </h1>
 
     <div class="space-y-6">
-      <UCard>
+      <ContentBox>
         <template #header>
           <h2 class="font-medium text-highlighted">
             {{ t('account.profile') }}
@@ -119,48 +119,54 @@ async function savePassword() {
           class="space-y-4"
           @submit.prevent="saveProfile"
         >
-          <UFormField
+          <FormField
             :label="t('common.name')"
             required
           >
-            <UInput
+            <input
               v-model="name"
               required
               maxlength="255"
-              class="w-full"
-            />
-          </UFormField>
+              class="form-control"
+            >
+          </FormField>
 
-          <UFormField :label="`${t('common.company')} (${t('common.optional')})`">
-            <UInput
+          <FormField
+            :label="`${t('common.company')} (${t('common.optional')})`"
+          >
+            <input
               v-model="company"
               maxlength="255"
-              class="w-full"
-            />
-          </UFormField>
+              class="form-control"
+            >
+          </FormField>
 
           <!-- Read-only: the address is the identity transfers are delivered to
                and magic links are issued against, so changing it is an admin
                action rather than something a session can do to itself. -->
-          <UFormField :label="t('common.email')">
-            <UInput
-              :model-value="user?.email"
+          <FormField
+            :label="t('common.email')"
+          >
+            <input
+              :value="user?.email"
               disabled
-              class="w-full"
-            />
-          </UFormField>
+              class="form-control"
+            >
+          </FormField>
 
-          <UButton
+          <AppButton
             type="submit"
             :label="t('common.save')"
             :loading="profileLoading"
           />
         </form>
-      </UCard>
+      </ContentBox>
 
       <!-- Members only: a guest drops files off and has no download page of
            their own to dress. -->
-      <UCard v-if="isMember">
+      <ContentBox
+        v-if="isMember"
+      >
         <template #header>
           <h2 class="font-medium text-highlighted">
             {{ t('account.background') }}
@@ -179,9 +185,9 @@ async function savePassword() {
           :disabled="backgroundBusy"
           @remove="removeBackground"
         />
-      </UCard>
+      </ContentBox>
 
-      <UCard>
+      <ContentBox>
         <template #header>
           <h2 class="font-medium text-highlighted">
             {{ t('account.changePassword') }}
@@ -192,60 +198,58 @@ async function savePassword() {
           class="space-y-4"
           @submit.prevent="savePassword"
         >
-          <UFormField
+          <FormField
             :label="t('account.currentPassword')"
             required
           >
-            <UInput
+            <input
               v-model="currentPassword"
               type="password"
               autocomplete="current-password"
               required
-              class="w-full"
-            />
-          </UFormField>
+              class="form-control"
+            >
+          </FormField>
 
-          <UFormField
+          <FormField
             :label="t('account.newPassword')"
             required
           >
-            <UInput
+            <input
               v-model="newPassword"
               type="password"
               autocomplete="new-password"
               required
               minlength="8"
-              class="w-full"
-            />
-          </UFormField>
+              class="form-control"
+            >
+          </FormField>
 
-          <UFormField
+          <FormField
             :label="t('account.confirmPassword')"
             required
           >
-            <UInput
+            <input
               v-model="confirmation"
               type="password"
               autocomplete="new-password"
               required
-              class="w-full"
-            />
-          </UFormField>
+              class="form-control"
+            >
+          </FormField>
 
-          <UAlert
+          <AppAlert
             v-if="passwordError"
-            icon="i-lucide-circle-alert"
-            variant="subtle"
             :description="passwordError"
           />
 
-          <UButton
+          <AppButton
             type="submit"
             :label="t('common.save')"
             :loading="passwordLoading"
           />
         </form>
-      </UCard>
+      </ContentBox>
 
       <!-- API keys live on the account page rather than a separate screen: they
            are a property of the signed-in person, not an admin setting. -->

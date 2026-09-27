@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { MailCheck } from 'lucide-vue-next'
+
 definePageMeta({ layout: 'blank' })
 
 const { t } = useI18n()
@@ -31,17 +33,16 @@ async function submit() {
     <div class="mx-auto max-w-md">
       <!-- No page heading: the card's own intro text already says what this
            form does, and pre-auth pages are kept free of chrome. -->
-      <UCard>
+      <ContentBox>
         <div
           v-if="sent"
           class="space-y-4"
         >
-          <UAlert
-            icon="i-lucide-mail-check"
-            variant="subtle"
+          <AppAlert
+            :icon="MailCheck"
             :description="t('lostPassword.sent')"
           />
-          <UButton
+          <AppButton
             to="/"
             :label="t('lostPassword.backToLogin')"
             color="neutral"
@@ -59,20 +60,19 @@ async function submit() {
             {{ t('lostPassword.intro') }}
           </p>
 
-          <UFormField
+          <FormField
             :label="t('common.email')"
-            name="email"
           >
-            <UInput
+            <input
               v-model="email"
               type="email"
               autocomplete="email"
               required
-              class="w-full"
-            />
-          </UFormField>
+              class="form-control"
+            >
+          </FormField>
 
-          <UButton
+          <AppButton
             type="submit"
             :label="t('lostPassword.submit')"
             :loading="loading"
@@ -81,15 +81,15 @@ async function submit() {
           />
 
           <div class="text-center">
-            <ULink
+            <NuxtLink
               to="/"
               class="text-sm text-muted hover:text-default"
             >
               {{ t('lostPassword.backToLogin') }}
-            </ULink>
+            </NuxtLink>
           </div>
         </form>
-      </UCard>
+      </ContentBox>
     </div>
   </div>
 </template>

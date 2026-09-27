@@ -10,9 +10,9 @@
 A self-hosted WeTransfer alternative. Send files to clients, and let them send
 files back — without either side needing a third-party service.
 
-Built with Nuxt 4, Nuxt UI and MySQL. The authentication, API conventions,
-migration runner and mail layer follow the same patterns as
-[LokalBoards](https://github.com/florian-strasser/LokalBoards).
+Built with Nuxt 4, Tailwind and MySQL. The authentication, API conventions,
+migration runner, mail layer and interface components follow the same patterns
+as [LokalBoards](https://github.com/florian-strasser/LokalBoards).
 
 ## What it does
 
@@ -132,18 +132,17 @@ it easy to miss. Writing the hex without the `#` works too.
 
 A full 50–950 ramp is derived from each hex at runtime in OKLCH
 (`app/utils/colorScale.ts`), so one value themes buttons, links, focus rings,
-alerts, the logo, the favicon and the e-mail templates together. Nuxt UI's
-semantic colours (success/warning/error/info) are all mapped onto the same accent
-in `app/app.config.ts`, which is what keeps a validation error from introducing a
-second colour — and, as a consequence, makes success states the accent too.
+alerts, the logo, the favicon and the e-mail templates together. There is no
+separate success, warning or error colour: a validation error uses the same
+accent, and success and failure are told apart by icon and wording instead.
 
-Text on the accent is forced to white in both themes (also `app.config.ts`), so a
-filled button or an active tab never ends up dark-on-colour in dark mode.
+Text on the accent is white in both themes, so a filled button or an active tab
+never ends up dark-on-colour in dark mode.
 
 The surfaces are fixed rather than derived: `#f5f5f7` page / `#ffffff` tiles in
-light, `#1c1c1e` / `#2c2c2e` in dark — the same values LokalBoards uses. Nuxt UI
-treats `--ui-bg` as both page and card, so the tile keeps that token and the page
-background is set on `body` (see `app/assets/css/main.css`).
+light, `#1c1c1e` / `#2c2c2e` in dark — the same values LokalBoards uses. Every
+colour role is defined in one place, `app/assets/css/main.css`, and the theme
+follows the operating system's light or dark setting.
 
 `NUXT_PUBLIC_COLOR_NEUTRAL` themes the grey ramp used for borders, muted text and
 hover fills. Its chroma is clamped, so a saturated value there is desaturated

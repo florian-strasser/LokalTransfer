@@ -84,7 +84,7 @@ await shot(auth, '12-compose-filled', '/transfers/new', async (page) => {
     await recipient.blur().catch(() => {})
   }
 
-  const subject = page.getByPlaceholder(/worum geht es|what.*about/i).first()
+  const subject = page.getByPlaceholder(/worum geht es|what are you sending/i).first()
   if (await subject.count()) await subject.fill('Strandhochzeit — Auswahl')
 
   await page.waitForTimeout(400)

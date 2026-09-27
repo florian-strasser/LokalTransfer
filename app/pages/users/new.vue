@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { ArrowLeft, RefreshCw } from 'lucide-vue-next'
+
 const { t } = useI18n()
 const notify = useNotify()
 const { apiErrorMessage } = useApiError()
@@ -70,9 +72,9 @@ async function submit() {
 <template>
   <div class="mx-auto max-w-xl">
     <div class="mb-6 flex items-center gap-3">
-      <UButton
+      <AppButton
         to="/users"
-        icon="i-lucide-arrow-left"
+        :icon="ArrowLeft"
         color="neutral"
         variant="ghost"
         :aria-label="t('common.back')"
@@ -82,116 +84,123 @@ async function submit() {
       </h1>
     </div>
 
-    <UCard>
+    <ContentBox>
       <form
         class="space-y-5"
         @submit.prevent="submit"
       >
-        <UFormField
+        <FormField
           :label="t('users.type')"
           :description="type === 'member' ? t('users.membersHint') : t('users.guestsHint')"
         >
-          <USelect
+          <select
             v-model="type"
-            :items="[
-              { label: t('users.typeMember'), value: 'member' },
-              { label: t('users.typeGuest'), value: 'guest' }
-            ]"
-            value-key="value"
-            class="w-full"
-          />
-        </UFormField>
+            class="form-control"
+          >
+            <option value="member">
+              {{ t('users.typeMember') }}
+            </option>
+            <option value="guest">
+              {{ t('users.typeGuest') }}
+            </option>
+          </select>
+        </FormField>
 
-        <UFormField
+        <FormField
           :label="t('common.name')"
           required
         >
-          <UInput
+          <input
             v-model="name"
             required
             maxlength="255"
-            class="w-full"
-          />
-        </UFormField>
+            class="form-control"
+          >
+        </FormField>
 
-        <UFormField
+        <FormField
           :label="t('common.email')"
           required
         >
-          <UInput
+          <input
             v-model="email"
             type="email"
             required
             maxlength="255"
-            class="w-full"
-          />
-        </UFormField>
+            class="form-control"
+          >
+        </FormField>
 
-        <UFormField :label="`${t('common.company')} (${t('common.optional')})`">
-          <UInput
+        <FormField
+          :label="`${t('common.company')} (${t('common.optional')})`"
+        >
+          <input
             v-model="company"
             maxlength="255"
-            class="w-full"
-          />
-        </UFormField>
+            class="form-control"
+          >
+        </FormField>
 
         <!-- Role and password only apply to members. A guest is never an admin
              and never has a password. -->
         <template v-if="type === 'member'">
-          <UFormField :label="t('users.role')">
-            <USelect
+          <FormField
+            :label="t('users.role')"
+          >
+            <select
               v-model="role"
-              :items="[
-                { label: t('users.roleUser'), value: 'user' },
-                { label: t('users.roleAdmin'), value: 'admin' }
-              ]"
-              value-key="value"
-              class="w-full"
-            />
-          </UFormField>
+              class="form-control"
+            >
+              <option value="user">
+                {{ t('users.roleUser') }}
+              </option>
+              <option value="admin">
+                {{ t('users.roleAdmin') }}
+              </option>
+            </select>
+          </FormField>
 
-          <UFormField
+          <FormField
             :label="t('common.password')"
             required
           >
-            <UFieldGroup class="w-full">
-              <UInput
+            <div class="field-group">
+              <input
                 v-model="password"
                 required
                 minlength="8"
-                class="w-full font-mono"
-              />
-              <UButton
+                class="form-control font-mono"
+              >
+              <AppButton
                 :label="t('users.generatePassword')"
-                icon="i-lucide-refresh-cw"
+                :icon="RefreshCw"
                 color="neutral"
                 variant="subtle"
+                size="lg"
                 @click="generatePassword"
               />
-            </UFieldGroup>
-          </UFormField>
+            </div>
+          </FormField>
         </template>
 
-        <UCheckbox
+        <InputCheckbox
           v-model="sendWelcome"
           :label="t('users.sendWelcome')"
           :description="type === 'member' ? t('users.sendWelcomeMemberHint') : t('users.sendWelcomeGuestHint')"
         />
 
-        <UAlert
+        <AppAlert
           v-if="errorMessage"
-          icon="i-lucide-circle-alert"
-          variant="subtle"
           :description="errorMessage"
         />
 
         <div class="flex gap-2">
-          <UButton
+          <AppButton
             type="submit"
             :label="t('common.save')"
             :loading="loading"
           />
-          <UButton
+          <AppButton
             to="/users"
             :label="t('common.cancel')"
             color="neutral"
@@ -199,6 +208,6 @@ async function submit() {
           />
         </div>
       </form>
-    </UCard>
+    </ContentBox>
   </div>
 </template>

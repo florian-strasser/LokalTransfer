@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { LogOut } from 'lucide-vue-next'
+
 // The guest upload page: the whole reason an outside contact has an account here.
 // They arrive via a magic link, pick which team member should get the files, and
 // send. The `blank` layout keeps them out of the member navigation, none of which
@@ -26,9 +28,9 @@ useSeoMeta({ title: t('compose.guestTitle') })
           </p>
         </div>
 
-        <UButton
+        <AppButton
           v-if="user"
-          icon="i-lucide-log-out"
+          :icon="LogOut"
           color="neutral"
           variant="ghost"
           size="sm"

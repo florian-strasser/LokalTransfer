@@ -29,11 +29,18 @@ const props = withDefaults(defineProps<{
 }>(), { delay: 0, immediate: false })
 
 const item = useTemplateRef<HTMLElement>('item')
+const { whenOpen } = useCurtain()
 
 onMounted(() => {
   if (props.immediate || !item.value) return
   inView(item.value, () => {
-    animate(item.value!.children[0]!, { y: 0, opacity: 1 }, { duration: 0.7, delay: props.delay, ease: 'easeOut' })
+    // In view does not mean seen: after a page change this runs under the
+    // curtain, so it waits for the curtain to lift before it moves.
+    whenOpen().then(() => {
+      // The page may have been left again while it waited.
+      const inner = item.value?.children[0]
+      if (inner) animate(inner, { y: 0, opacity: 1 }, { duration: 0.7, delay: props.delay, ease: 'easeOut' })
+    })
   })
 })
 </script>

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { ArrowLeft } from 'lucide-vue-next'
+
 const { t } = useI18n()
 const route = useRoute()
 const { user: currentUser } = useAuth()
@@ -72,9 +74,9 @@ async function submit() {
     class="mx-auto max-w-xl"
   >
     <div class="mb-6 flex items-center gap-3">
-      <UButton
+      <AppButton
         to="/users"
-        icon="i-lucide-arrow-left"
+        :icon="ArrowLeft"
         color="neutral"
         variant="ghost"
         :aria-label="t('common.back')"
@@ -89,87 +91,91 @@ async function submit() {
       </div>
     </div>
 
-    <UCard>
+    <ContentBox>
       <form
         class="space-y-5"
         @submit.prevent="submit"
       >
-        <UFormField
+        <FormField
           :label="t('common.name')"
           required
         >
-          <UInput
+          <input
             v-model="name"
             required
             maxlength="255"
-            class="w-full"
-          />
-        </UFormField>
+            class="form-control"
+          >
+        </FormField>
 
-        <UFormField
+        <FormField
           :label="t('common.email')"
           required
         >
-          <UInput
+          <input
             v-model="email"
             type="email"
             required
             maxlength="255"
-            class="w-full"
-          />
-        </UFormField>
+            class="form-control"
+          >
+        </FormField>
 
-        <UFormField :label="`${t('common.company')} (${t('common.optional')})`">
-          <UInput
+        <FormField
+          :label="`${t('common.company')} (${t('common.optional')})`"
+        >
+          <input
             v-model="company"
             maxlength="255"
-            class="w-full"
-          />
-        </UFormField>
+            class="form-control"
+          >
+        </FormField>
 
         <template v-if="target.type === 'member'">
-          <UFormField :label="t('users.role')">
-            <USelect
+          <FormField
+            :label="t('users.role')"
+            :help="isSelf ? t('users.errors.CANNOT_DEMOTE_SELF') : undefined"
+          >
+            <select
               v-model="role"
-              :items="[
-                { label: t('users.roleUser'), value: 'user' },
-                { label: t('users.roleAdmin'), value: 'admin' }
-              ]"
-              value-key="value"
               :disabled="isSelf"
-              :help="isSelf ? t('users.errors.CANNOT_DEMOTE_SELF') : undefined"
-              class="w-full"
-            />
-          </UFormField>
+              class="form-control"
+            >
+              <option value="user">
+                {{ t('users.roleUser') }}
+              </option>
+              <option value="admin">
+                {{ t('users.roleAdmin') }}
+              </option>
+            </select>
+          </FormField>
 
-          <UFormField
+          <FormField
             :label="t('users.newPassword')"
             :description="t('users.newPasswordHint')"
           >
-            <UInput
+            <input
               v-model="password"
               type="password"
               autocomplete="new-password"
               minlength="8"
-              class="w-full"
-            />
-          </UFormField>
+              class="form-control"
+            >
+          </FormField>
         </template>
 
-        <UAlert
+        <AppAlert
           v-if="errorMessage"
-          icon="i-lucide-circle-alert"
-          variant="subtle"
           :description="errorMessage"
         />
 
         <div class="flex gap-2">
-          <UButton
+          <AppButton
             type="submit"
             :label="t('common.save')"
             :loading="loading"
           />
-          <UButton
+          <AppButton
             to="/users"
             :label="t('common.cancel')"
             color="neutral"
@@ -177,6 +183,6 @@ async function submit() {
           />
         </div>
       </form>
-    </UCard>
+    </ContentBox>
   </div>
 </template>

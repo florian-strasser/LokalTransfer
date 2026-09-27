@@ -1,10 +1,10 @@
+import tailwindcss from '@tailwindcss/vite'
 import pkg from './package.json'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   modules: [
     '@nuxt/eslint',
-    '@nuxt/ui',
     '@nuxtjs/i18n',
     '@nuxtjs/mcp-toolkit',
     'motion-v/nuxt'
@@ -36,22 +36,11 @@ export default defineNuxtConfig({
     }
   },
 
-  css: ['~/assets/css/main.css'],
-
   // The theme follows the operating system and cannot be overridden in the app —
-  // there is no toggle anywhere in the UI.
-  //
-  // `storageKey` is deliberately a fresh name. @nuxtjs/color-mode has no way to
-  // switch persistence off, and a value stored under the old key by a browser
-  // that once used the toggle would still win over `preference`. Pointing at an
-  // unused key means there is never anything stored to override the system
-  // setting, and with the toggle gone nothing ever writes to it either.
-  colorMode: {
-    preference: 'system',
-    // Used only where the OS expresses no preference at all.
-    fallback: 'light',
-    storageKey: 'lokaltransfer-color-mode-unused'
-  },
+  // there is no toggle anywhere in the UI. That is plain `prefers-color-scheme`
+  // in the stylesheet, the way LokalBoards does it, rather than a colour-mode
+  // module whose script has to run in <head> before the page can paint.
+  css: ['~/assets/css/main.css'],
 
   // Every environment-specific value is read through runtimeConfig rather than
   // process.env at build time, which is the only way env variables reliably
@@ -160,6 +149,12 @@ export default defineNuxtConfig({
     }
   },
 
+  // Tailwind through its own Vite plugin, which is all a component library was
+  // doing for us here.
+  vite: {
+    plugins: [tailwindcss()]
+  },
+
   eslint: {
     config: {
       stylistic: {
@@ -167,24 +162,6 @@ export default defineNuxtConfig({
         braceStyle: '1tbs'
       }
     }
-  },
-
-  // Inter is the only family the UI uses. Declared explicitly so the build
-  // fetches exactly the weights the interface needs and nothing more — the
-  // defaults would pull a wider range and inflate what gets self-hosted.
-  //
-  // `latin-ext` is included for names in the user list and on transfers, which
-  // routinely carry accents the base latin subset doesn't cover.
-  fonts: {
-    families: [
-      {
-        name: 'Inter',
-        provider: 'google',
-        weights: [400, 500, 600, 700],
-        styles: ['normal'],
-        subsets: ['latin', 'latin-ext']
-      }
-    ]
   },
 
   i18n: {

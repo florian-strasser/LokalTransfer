@@ -1,10 +1,9 @@
 /**
  * Toasts that say whether something worked.
  *
- * Every call site used to pass `color: 'primary'` by hand, including the failure
+ * Every call site used to pass its own colour by hand, including the failure
  * branches — so "User deleted" and "Something went wrong" arrived looking
- * identical, in the accent colour, and the only thing distinguishing them was
- * reading the sentence.
+ * identical, and the only thing distinguishing them was reading the sentence.
  *
  * A second hue is not available to fix that: the whole interface is neutral plus
  * exactly one accent. So the two are told apart by weight and by icon instead.
@@ -18,30 +17,38 @@
  * Deciding that here rather than at each call site is what keeps it true — a new
  * toast added later can't quietly get it wrong, and changing the treatment is
  * one edit rather than eighteen.
+ *
+ * The toasts themselves are drawn by ToastHolder, which listens for the
+ * `app:toast` hook — the same arrangement as LokalBoards.
  */
+export interface ToastInput {
+  title: string
+  description?: string
+  tone: 'success' | 'error'
+  /** How long it stays up while nobody is pointing at it. */
+  seconds: number
+}
+
+declare module '#app' {
+  interface RuntimeNuxtHooks {
+    'app:toast': (toast: ToastInput) => void
+  }
+}
+
 export function useNotify() {
-  const toast = useToast()
+  // Taken during setup: the methods below run later, from event handlers, where
+  // there is no component context to find the app from.
+  const nuxtApp = useNuxtApp()
 
   return {
     /** Something the user asked for happened. */
     success(title: string, description?: string) {
-      toast.add({
-        title,
-        description,
-        icon: 'i-lucide-check',
-        color: 'neutral'
-      })
+      void nuxtApp.callHook('app:toast', { title, description, tone: 'success', seconds: 5 })
     },
 
     /** Something failed. Held longer, because it may need acting on. */
     error(title: string, description?: string) {
-      toast.add({
-        title,
-        description,
-        icon: 'i-lucide-alert-triangle',
-        color: 'primary',
-        duration: 8000
-      })
+      void nuxtApp.callHook('app:toast', { title, description, tone: 'error', seconds: 8 })
     }
   }
 }

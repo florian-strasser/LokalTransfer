@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { Pencil, Trash2, UserCheck, UserPlus, UserX } from 'lucide-vue-next'
+
 const { t } = useI18n()
 const { user: currentUser } = useAuth()
 const { formatDate } = useFormat()
@@ -66,10 +68,10 @@ async function remove(target: ManagedUser) {
         {{ t('users.title') }}
       </h1>
 
-      <UButton
+      <AppButton
         to="/users/new"
         :label="t('users.newUser')"
-        icon="i-lucide-user-plus"
+        :icon="UserPlus"
       />
     </div>
 
@@ -90,11 +92,13 @@ async function remove(target: ManagedUser) {
           </p>
         </div>
 
-        <UCard v-if="!group.items.length">
+        <ContentBox
+          v-if="!group.items.length"
+        >
           <p class="py-6 text-center text-sm text-muted">
             —
           </p>
-        </UCard>
+        </ContentBox>
 
         <ul
           v-else
@@ -104,24 +108,22 @@ async function remove(target: ManagedUser) {
             v-for="item in group.items"
             :key="item.id"
           >
-            <UCard :ui="{ body: 'p-4' }">
+            <ContentBox
+              body-class="p-4"
+            >
               <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div class="min-w-0 flex-1">
                   <div class="flex flex-wrap items-center gap-2">
                     <span class="font-medium text-highlighted truncate">{{ item.name }}</span>
 
-                    <UBadge
+                    <AppBadge
                       v-if="item.role === 'admin'"
                       :label="t('users.roleAdmin')"
-                      variant="subtle"
-                      size="sm"
+                      color="primary"
                     />
-                    <UBadge
+                    <AppBadge
                       v-if="item.banned"
                       :label="t('users.disabled')"
-                      color="neutral"
-                      variant="subtle"
-                      size="sm"
                     />
                   </div>
 
@@ -138,9 +140,9 @@ async function remove(target: ManagedUser) {
                 </div>
 
                 <div class="flex shrink-0 items-center gap-1">
-                  <UButton
+                  <AppButton
                     :to="`/users/${item.id}`"
-                    icon="i-lucide-pencil"
+                    :icon="Pencil"
                     color="neutral"
                     variant="ghost"
                     size="sm"
@@ -149,9 +151,9 @@ async function remove(target: ManagedUser) {
                   <!-- Both actions are hidden for your own row: the server
                        refuses them anyway, so offering them would only produce
                        an error message. -->
-                  <UButton
+                  <AppButton
                     v-if="item.id !== currentUser?.id"
-                    :icon="item.banned ? 'i-lucide-user-check' : 'i-lucide-user-x'"
+                    :icon="item.banned ? UserCheck : UserX"
                     color="neutral"
                     variant="ghost"
                     size="sm"
@@ -159,9 +161,9 @@ async function remove(target: ManagedUser) {
                     :aria-label="item.banned ? t('users.activate') : t('users.deactivate')"
                     @click="toggleActive(item)"
                   />
-                  <UButton
+                  <AppButton
                     v-if="item.id !== currentUser?.id"
-                    icon="i-lucide-trash-2"
+                    :icon="Trash2"
                     color="neutral"
                     variant="ghost"
                     size="sm"
@@ -171,7 +173,7 @@ async function remove(target: ManagedUser) {
                   />
                 </div>
               </div>
-            </UCard>
+            </ContentBox>
           </li>
         </ul>
       </section>

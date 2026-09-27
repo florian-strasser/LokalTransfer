@@ -77,12 +77,17 @@ start_server() { # $1 = language
   # Every NUXT_* variable the app reads is set explicitly. The repo's own .env
   # describes a developer's machine — and currently points at production — so
   # inheriting from it would either fail to connect or, far worse, succeed.
+  #
+  # Drafts live for a month here instead of a day: the seeded draft is 26 hours
+  # old, so the cleanup swept it as soon as the second language's server came
+  # up, and that language's dashboard was one transfer short.
   NUXT_MYSQL_HOST="$DEMO_DB_HOST" NUXT_MYSQL_USER="$DEMO_DB_USER" NUXT_MYSQL_PASSWORD="$DEMO_DB_PASS" \
   NUXT_MYSQL_DATABASE="$DEMO_DB_NAME" NUXT_MYSQL_SSL=false \
   NUXT_STORAGE_PATH="$DEMO_STORAGE" \
   NUXT_APP_URL="$DEMO_BASE_URL" NUXT_LANGUAGE="$1" NUXT_TIMEZONE=Europe/Berlin \
   NUXT_PUBLIC_BACKGROUND_IMAGE="${NUXT_PUBLIC_BACKGROUND_IMAGE:-}" \
   NUXT_EMAIL_TRANSPORT=json \
+  NUXT_DRAFT_MAX_AGE_HOURS=720 \
   NUXT_ADMIN_EMAIL= NUXT_ADMIN_PASSWORD= \
   PORT="$DEMO_PORT" NITRO_PORT="$DEMO_PORT" \
     node .output/server/index.mjs >"$LOG" 2>&1 &

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { Copy, Plus, Trash2 } from 'lucide-vue-next'
+
 // API key management, on the account page.
 //
 // The whole design turns on one fact: the server stores only a SHA-256 hash of a
@@ -99,7 +101,7 @@ async function revoke(key: ApiKey) {
 </script>
 
 <template>
-  <UCard>
+  <ContentBox>
     <template #header>
       <h2 class="font-medium text-highlighted">
         {{ t('apiKeys.title') }}
@@ -123,23 +125,24 @@ async function revoke(key: ApiKey) {
           {{ t('apiKeys.createdHint') }}
         </p>
 
-        <UFieldGroup class="mt-3 w-full">
-          <UInput
-            :model-value="freshKey"
+        <div class="field-group mt-3">
+          <input
+            :value="freshKey"
             readonly
-            class="w-full font-mono text-xs"
+            class="form-control font-mono text-xs"
             @focus="(e: FocusEvent) => (e.target as HTMLInputElement).select()"
-          />
-          <UButton
-            icon="i-lucide-copy"
+          >
+          <AppButton
+            :icon="Copy"
             color="neutral"
             variant="subtle"
+            size="lg"
             :aria-label="t('apiKeys.copy')"
             @click="copyFresh"
           />
-        </UFieldGroup>
+        </div>
 
-        <UButton
+        <AppButton
           class="mt-3"
           :label="t('apiKeys.done')"
           color="neutral"
@@ -172,19 +175,13 @@ async function revoke(key: ApiKey) {
               <code class="rounded bg-elevated px-1.5 py-0.5 font-mono text-xs text-muted">
                 {{ key.start }}…
               </code>
-              <UBadge
+              <AppBadge
                 v-if="key.readOnly"
                 :label="t('apiKeys.readOnlyLabel')"
-                color="neutral"
-                variant="subtle"
-                size="sm"
               />
-              <UBadge
+              <AppBadge
                 v-if="key.expired"
                 :label="t('apiKeys.expiredLabel')"
-                color="neutral"
-                variant="subtle"
-                size="sm"
               />
             </div>
 
@@ -201,8 +198,8 @@ async function revoke(key: ApiKey) {
             </p>
           </div>
 
-          <UButton
-            icon="i-lucide-trash-2"
+          <AppButton
+            :icon="Trash2"
             color="neutral"
             variant="ghost"
             size="sm"
@@ -218,49 +215,55 @@ async function revoke(key: ApiKey) {
         v-if="showForm"
         class="space-y-4 rounded-lg bg-elevated p-4"
       >
-        <UFormField
+        <FormField
           :label="t('apiKeys.name')"
           :description="t('apiKeys.nameHint')"
           required
         >
-          <UInput
+          <input
             v-model="name"
             :placeholder="t('apiKeys.namePlaceholder')"
             maxlength="255"
-            class="w-full"
-          />
-        </UFormField>
+            class="form-control"
+          >
+        </FormField>
 
-        <UFormField :label="t('apiKeys.expiry')">
-          <USelect
+        <FormField
+          :label="t('apiKeys.expiry')"
+        >
+          <select
             v-model="expiresInDays"
-            :items="expiryOptions"
-            value-key="value"
-            class="w-full"
-          />
-        </UFormField>
+            class="form-control"
+          >
+            <option
+              v-for="option in expiryOptions"
+              :key="String(option.value)"
+              :value="option.value"
+            >
+              {{ option.label }}
+            </option>
+          </select>
+        </FormField>
 
-        <UCheckbox
+        <InputCheckbox
           v-model="readOnly"
           :label="t('apiKeys.readOnly')"
           :description="t('apiKeys.readOnlyHint')"
         />
 
-        <UAlert
+        <AppAlert
           v-if="createError"
-          icon="i-lucide-circle-alert"
-          variant="subtle"
           :description="createError"
         />
 
         <div class="flex gap-2">
-          <UButton
+          <AppButton
             :label="t('apiKeys.create')"
             :loading="creating"
             :disabled="!name.trim()"
             @click="create"
           />
-          <UButton
+          <AppButton
             :label="t('common.cancel')"
             color="neutral"
             variant="ghost"
@@ -269,14 +272,14 @@ async function revoke(key: ApiKey) {
         </div>
       </div>
 
-      <UButton
+      <AppButton
         v-else
         :label="t('apiKeys.create')"
-        icon="i-lucide-plus"
+        :icon="Plus"
         color="neutral"
         variant="subtle"
         @click="showForm = true"
       />
     </div>
-  </UCard>
+  </ContentBox>
 </template>

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { CircleAlert, CircleCheck, CloudUpload, FileIcon, Plus, X } from 'lucide-vue-next'
 import type { QueuedFile } from '~/composables/useTransferUpload'
 
 const props = defineProps<{
@@ -62,9 +63,9 @@ const totalSize = computed(() => props.files.reduce((sum, item) => sum + item.fi
         class="text-center"
         :class="compact ? 'px-4 py-6' : 'px-6 py-10'"
       >
-        <UIcon
-          name="i-lucide-upload-cloud"
+        <CloudUpload
           :class="compact ? 'size-6 text-dimmed' : 'size-8 text-dimmed'"
+          aria-hidden="true"
         />
         <p
           class="font-medium text-default"
@@ -104,14 +105,15 @@ const totalSize = computed(() => props.files.reduce((sum, item) => sum + item.fi
           class="flex items-center gap-3"
           :class="compact ? 'px-3 py-2' : 'px-4 py-3'"
         >
-          <UIcon
-            :name="item.status === 'done'
-              ? 'i-lucide-circle-check'
+          <component
+            :is="item.status === 'done'
+              ? CircleCheck
               : item.status === 'error'
-                ? 'i-lucide-circle-alert'
-                : 'i-lucide-file'"
+                ? CircleAlert
+                : FileIcon"
             class="size-5 shrink-0"
             :class="item.status === 'done' ? 'text-primary' : 'text-dimmed'"
+            aria-hidden="true"
           />
 
           <div class="min-w-0 flex-1">
@@ -142,9 +144,9 @@ const totalSize = computed(() => props.files.reduce((sum, item) => sum + item.fi
             />
           </div>
 
-          <UButton
+          <AppButton
             v-if="!disabled"
-            icon="i-lucide-x"
+            :icon="X"
             color="neutral"
             variant="ghost"
             size="xs"
@@ -156,10 +158,10 @@ const totalSize = computed(() => props.files.reduce((sum, item) => sum + item.fi
 
       <div class="mt-3 flex items-center justify-between text-sm text-muted">
         <span>{{ t('compose.totalSize', { count: files.length, size: formatBytes(totalSize) }, files.length) }}</span>
-        <UButton
+        <AppButton
           v-if="!disabled"
           :label="t('compose.addMore')"
-          icon="i-lucide-plus"
+          :icon="Plus"
           color="neutral"
           variant="ghost"
           size="xs"

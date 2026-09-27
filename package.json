@@ -17,14 +17,13 @@
     "demo:screenshots": "bash scripts/demo/run.sh"
   },
   "dependencies": {
-    "@iconify-json/lucide": "^1.2.121",
-    "@iconify-json/simple-icons": "^1.2.92",
-    "@nuxt/ui": "^4.11.0",
     "@nuxtjs/i18n": "^10.6.0",
     "@nuxtjs/mcp-toolkit": "^0.18.1",
+    "@tailwindcss/vite": "^4.3.2",
     "archiver": "^8.0.0",
     "bcryptjs": "^3.0.3",
     "busboy": "^1.6.0",
+    "lucide-vue-next": "^1.0.0",
     "motion-v": "^2.4.0",
     "mysql2": "^3.23.2",
     "nodemailer": "^9.1.1",

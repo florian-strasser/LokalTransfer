@@ -44,7 +44,7 @@ const wrapperClass = computed(() => {
 </script>
 
 <template>
-  <!-- No background colour on this root: Nuxt UI already paints `bg-default` on
+  <!-- No background colour on this root: main.css already paints the page on
        <body>, and an opaque background here would be painted *after* the fixed
        AppBackground layer (which sits at a negative z-index inside the same
        stacking context), hiding the image entirely. -->
@@ -68,22 +68,24 @@ const wrapperClass = computed(() => {
       class="px-4 sm:px-6 py-6"
     >
       <div class="mx-auto max-w-3xl flex gap-4 text-sm text-muted">
-        <ULink
+        <a
           v-if="imprintUrl"
-          :to="imprintUrl"
+          :href="imprintUrl"
           target="_blank"
-          class="hover:text-default"
+          rel="noopener"
+          class="transition-colors hover:text-default"
         >
           Impressum
-        </ULink>
-        <ULink
+        </a>
+        <a
           v-if="privacyUrl"
-          :to="privacyUrl"
+          :href="privacyUrl"
           target="_blank"
-          class="hover:text-default"
+          rel="noopener"
+          class="transition-colors hover:text-default"
         >
           Datenschutz
-        </ULink>
+        </a>
       </div>
     </footer>
   </div>

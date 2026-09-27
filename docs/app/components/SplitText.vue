@@ -64,7 +64,15 @@ const root = useTemplateRef<HTMLElement>('root')
 // word's `overflow: hidden` mask, an IntersectionObserver measures it after that
 // clipping, and a piece that is never visible never crosses the threshold.
 const inView = useInView(root, { once: true, amount: props.amount })
-const revealed = computed(() => props.play ?? inView.value)
+
+// A page arriving under the curtain of a page change is in view as far as an
+// observer can tell, so the reveal waits on the curtain as well. Latched once
+// true: a block that outlives a later page change is never hidden again.
+const { open } = useCurtain()
+const revealed = ref(false)
+watchEffect(() => {
+  if ((props.play ?? inView.value) && open.value) revealed.value = true
+})
 
 const step = computed(() => props.stagger ?? (props.by === 'word' ? 0.02 : 0.03))
 

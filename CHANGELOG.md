@@ -1,5 +1,41 @@
 # Changelog
 
+## v0.3.0
+
+### Improvements
+
+- **Pages load faster: Nuxt UI is gone.** The interface is built from its own
+  small components now, the way LokalBoards is — form fields, buttons, tabs,
+  the recipient picker, toasts and tooltips — styled with plain Tailwind and
+  icons from `lucide-vue-next`. The browser downloads 37% less JavaScript and
+  69% less CSS; on the sign-in page, measured on a throttled phone profile, the
+  largest paint arrives in 4.2 s instead of 6.8 s and the page weighs 523 KiB
+  instead of 906 KiB. Colours, `NUXT_PUBLIC_COLOR_*` and the dark theme work as
+  before; the theme now follows the system through the stylesheet alone, with
+  no script in the page head. Inter is self-hosted from two files, as in
+  LokalBoards.
+
+- **Text fields use the page's own 16px**, which also stops iOS zooming the
+  whole page in when one is tapped.
+
+- **Ukrainian is set in Inter too.** Its letters used to fall back to the
+  system font; an instance running in Ukrainian now loads Inter's Cyrillic file
+  (18 KiB), and an instance in any other language never requests it.
+
+- **New screenshots** in the README, on the documentation site and in its link
+  preview, showing the interface as it looks now.
+
+- **A wipe between pages on the documentation site.** Moving from one page to
+  another sweeps a curtain in the brand red across the screen, and the new page
+  is put in place behind it.
+
+### Fixed
+
+- **A guest who reloaded the upload page found nobody to send to.** The list of
+  team members was fetched without the guest's session while the page was
+  rendered on the server, so it came back empty unless the page had been
+  reached by navigating inside the app.
+
 ## v0.2.2
 
 ### Added

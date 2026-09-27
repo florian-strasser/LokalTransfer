@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { ImageIcon, X } from 'lucide-vue-next'
+
 // A drag-and-drop field for one image: a transfer's background in the composer,
 // and a member's default background on the account page.
 //
@@ -102,9 +104,9 @@ function clear() {
         alt=""
         class="block h-28 w-full object-cover"
       >
-      <UButton
+      <AppButton
         v-if="!disabled"
-        icon="i-lucide-x"
+        :icon="X"
         color="neutral"
         variant="solid"
         size="xs"
@@ -118,9 +120,9 @@ function clear() {
       v-else
       class="px-4 py-5 text-center"
     >
-      <UIcon
-        name="i-lucide-image"
+      <ImageIcon
         class="size-6 text-dimmed"
+        aria-hidden="true"
       />
       <p class="mt-2 text-sm font-medium text-default">
         {{ label }}

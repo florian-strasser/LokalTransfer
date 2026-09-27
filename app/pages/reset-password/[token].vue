@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { CircleCheck } from 'lucide-vue-next'
+
 definePageMeta({ layout: 'blank' })
 
 const { t } = useI18n()
@@ -47,17 +49,16 @@ async function submit() {
   <div class="py-8 sm:py-16">
     <div class="mx-auto max-w-md">
       <!-- No page heading; the field labels carry the meaning. -->
-      <UCard>
+      <ContentBox>
         <div
           v-if="done"
           class="space-y-4"
         >
-          <UAlert
-            icon="i-lucide-circle-check"
-            variant="subtle"
+          <AppAlert
+            :icon="CircleCheck"
             :description="t('resetPassword.success')"
           />
-          <UButton
+          <AppButton
             to="/"
             :label="t('login.submit')"
             block
@@ -69,40 +70,36 @@ async function submit() {
           class="space-y-4"
           @submit.prevent="submit"
         >
-          <UFormField
+          <FormField
             :label="t('resetPassword.newPassword')"
-            name="password"
           >
-            <UInput
+            <input
               v-model="password"
               type="password"
               autocomplete="new-password"
               required
-              class="w-full"
-            />
-          </UFormField>
+              class="form-control"
+            >
+          </FormField>
 
-          <UFormField
+          <FormField
             :label="t('resetPassword.confirmPassword')"
-            name="confirmation"
           >
-            <UInput
+            <input
               v-model="confirmation"
               type="password"
               autocomplete="new-password"
               required
-              class="w-full"
-            />
-          </UFormField>
+              class="form-control"
+            >
+          </FormField>
 
-          <UAlert
+          <AppAlert
             v-if="errorMessage"
-            icon="i-lucide-circle-alert"
-            variant="subtle"
             :description="errorMessage"
           />
 
-          <UButton
+          <AppButton
             type="submit"
             :label="t('resetPassword.submit')"
             :loading="loading"
@@ -110,7 +107,7 @@ async function submit() {
             size="lg"
           />
         </form>
-      </UCard>
+      </ContentBox>
     </div>
   </div>
 </template>

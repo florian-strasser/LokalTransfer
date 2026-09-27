@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { CalendarClock, CircleCheck, Copy, Link, Mail, Settings2, X } from 'lucide-vue-next'
+
 // The send form, shared by both flows.
 //
 // A member and a guest are doing the same thing — pick files, pick who gets
@@ -58,9 +60,14 @@ const selectedMembers = ref<string[]>([])
 
 // Only fetched for guests — a member has no use for the list, and it would be an
 // unnecessary disclosure of the team roster.
+//
+// `useRequestFetch` rather than `$fetch`: during server rendering a bare `$fetch`
+// goes out without the guest's session cookie, the endpoint answers 401, and a
+// guest who reloaded /send found nobody to send to.
+const requestFetch = useRequestFetch()
 const { data: teamMembers } = await useAsyncData(
   'recipients',
-  () => $fetch<{ data: { id: string, name: string, email: string }[] }>('/api/recipients'),
+  () => requestFetch<{ data: { id: string, name: string, email: string }[] }>('/api/recipients'),
   { immediate: props.mode === 'guest', default: () => ({ data: [] }) }
 )
 
@@ -219,9 +226,9 @@ const progressLabel = computed(() => {
     class="rounded-2xl border border-default bg-default/90 p-6 shadow-xl backdrop-blur-md sm:p-8"
   >
     <div class="space-y-5 text-center">
-      <UIcon
-        name="i-lucide-circle-check"
+      <CircleCheck
         class="size-12 text-primary"
+        aria-hidden="true"
       />
 
       <div>
@@ -248,23 +255,26 @@ const progressLabel = computed(() => {
         v-if="isMember"
         class="text-left"
       >
-        <UFormField :label="t('compose.downloadLink')">
-          <UFieldGroup class="w-full">
-            <UInput
-              :model-value="upload.result.value.downloadUrl"
+        <FormField
+          :label="t('compose.downloadLink')"
+        >
+          <div class="field-group">
+            <input
+              :value="upload.result.value.downloadUrl"
               readonly
-              class="w-full"
+              class="form-control"
               @focus="(e: FocusEvent) => (e.target as HTMLInputElement).select()"
-            />
-            <UButton
-              icon="i-lucide-copy"
+            >
+            <AppButton
+              :icon="Copy"
               color="neutral"
               variant="subtle"
+              size="lg"
               :aria-label="t('dashboard.copyLink')"
               @click="copyLink"
             />
-          </UFieldGroup>
-        </UFormField>
+          </div>
+        </FormField>
 
         <p
           v-if="upload.result.value.expiresAt"
@@ -274,7 +284,7 @@ const progressLabel = computed(() => {
         </p>
       </div>
 
-      <UButton
+      <AppButton
         :label="t('compose.newAnother')"
         color="neutral"
         variant="subtle"
@@ -308,63 +318,62 @@ const progressLabel = computed(() => {
         @remove="upload.removeFile"
       />
 
-      <USeparator />
+      <hr class="border-default">
 
       <!-- Delivery: mail it, or take the link. -->
       <div
         v-if="isMember"
         class="space-y-3"
       >
-        <UTabs
+        <SegmentedControl
           v-model="delivery"
           :items="[
-            { label: t('compose.deliveryEmail'), value: 'email', icon: 'i-lucide-mail' },
-            { label: t('compose.deliveryLink'), value: 'link', icon: 'i-lucide-link' }
+            { label: t('compose.deliveryEmail'), value: 'email', icon: Mail },
+            { label: t('compose.deliveryLink'), value: 'link', icon: Link }
           ]"
-          size="sm"
-          :content="false"
           :disabled="upload.isBusy.value"
         />
 
-        <UFormField
+        <FormField
           v-if="delivery === 'email'"
           :label="t('compose.recipients')"
         >
-          <UInput
+          <input
             v-model="recipientInput"
             type="email"
             :placeholder="t('compose.recipientsPlaceholder')"
             :disabled="upload.isBusy.value"
-            class="w-full"
+            class="form-control"
             @keydown.enter.prevent="addRecipient"
             @blur="addRecipient"
-          />
+          >
 
           <div
             v-if="recipients.length"
             class="mt-2 flex flex-wrap gap-1.5"
           >
-            <UBadge
+            <AppBadge
               v-for="email in recipients"
               :key="email"
-              color="neutral"
-              variant="subtle"
-              class="gap-1"
             >
               {{ email }}
-              <UButton
-                icon="i-lucide-x"
-                color="neutral"
-                variant="link"
-                size="xs"
-                :padded="false"
+              <!-- A cross inside the tag rather than a full button, which would
+                   make the tag as tall as a button. -->
+              <button
+                type="button"
+                class="-mr-0.5 cursor-pointer rounded-sm p-0.5 text-muted transition-colors hover:bg-accented hover:text-highlighted disabled:cursor-not-allowed"
                 :disabled="upload.isBusy.value"
                 :aria-label="t('compose.removeFile')"
                 @click="removeRecipient(email)"
-              />
-            </UBadge>
+              >
+                <X
+                  class="size-3"
+                  aria-hidden="true"
+                />
+              </button>
+            </AppBadge>
           </div>
-        </UFormField>
+        </FormField>
 
         <p
           v-else
@@ -375,39 +384,40 @@ const progressLabel = computed(() => {
       </div>
 
       <!-- Guests pick from the team instead. -->
-      <UFormField
+      <!-- A div, not a label: the menu is a button and a list of buttons, and a
+           label around them would pass every click on its words to the menu's
+           own button. -->
+      <FormField
         v-else
+        as="div"
         :label="t('compose.recipientPicker')"
         :description="t('compose.recipientPickerHint')"
         required
       >
-        <USelectMenu
+        <SelectMenu
           v-model="selectedMembers"
-          :items="memberOptions"
-          value-key="value"
+          :options="memberOptions"
           multiple
           :disabled="upload.isBusy.value"
           :placeholder="t('compose.recipientPicker')"
-          class="w-full"
         />
-      </UFormField>
+      </FormField>
 
-      <UInput
+      <input
         v-model="subject"
         :placeholder="t('compose.subjectPlaceholder')"
         :disabled="upload.isBusy.value"
         maxlength="255"
-        class="w-full"
-      />
+        class="form-control"
+      >
 
-      <UTextarea
+      <textarea
         v-model="message"
         :placeholder="t('compose.messagePlaceholder')"
         :disabled="upload.isBusy.value"
-        :rows="2"
-        autoresize
+        rows="2"
         maxlength="5000"
-        class="w-full"
+        class="form-control field-grows"
       />
     </div>
 
@@ -417,18 +427,35 @@ const progressLabel = computed(() => {
         v-if="isMember"
         class="flex items-center gap-2"
       >
-        <USelect
-          v-model="retentionDays"
-          :items="retentionOptions"
-          value-key="value"
-          icon="i-lucide-calendar-clock"
-          :disabled="upload.isBusy.value"
-          class="flex-1"
-        />
-        <UButton
-          icon="i-lucide-settings-2"
-          color="neutral"
-          :variant="showOptions ? 'soft' : 'subtle'"
+        <div class="relative flex-1">
+          <CalendarClock
+            class="pointer-events-none absolute top-1/2 left-3.5 size-5 -translate-y-1/2 text-muted"
+            aria-hidden="true"
+          />
+          <!-- `pl-11!`: .form-control is unlayered and sets its own padding, so
+               only an important utility can make room for the icon. -->
+          <select
+            v-model="retentionDays"
+            :disabled="upload.isBusy.value"
+            :aria-label="t('compose.retention')"
+            class="form-control pl-11!"
+          >
+            <option
+              v-for="option in retentionOptions"
+              :key="option.value"
+              :value="option.value"
+            >
+              {{ option.label }}
+            </option>
+          </select>
+        </div>
+        <!-- Open, the drawer's button takes the accent tint: it is a toggle, and
+             its state should be visible without reading aria-expanded. -->
+        <AppButton
+          :icon="Settings2"
+          :color="showOptions ? 'primary' : 'neutral'"
+          variant="subtle"
+          size="lg"
           :disabled="upload.isBusy.value"
           :aria-label="t('compose.options')"
           :aria-expanded="showOptions"
@@ -448,34 +475,41 @@ const progressLabel = computed(() => {
         v-if="isMember && showOptions"
         class="space-y-4 rounded-lg bg-elevated p-4"
       >
-        <UFormField
+        <FormField
           :label="t('compose.password')"
           :description="t('compose.passwordHint')"
         >
-          <UInput
+          <input
             v-model="password"
             type="password"
             autocomplete="new-password"
             :placeholder="t('compose.passwordPlaceholder')"
             :disabled="upload.isBusy.value"
-            class="w-full"
-          />
-        </UFormField>
+            class="form-control"
+          >
+        </FormField>
 
-        <UFormField
+        <FormField
           :label="t('compose.layout')"
           :description="t('compose.layoutHint')"
         >
-          <USelect
+          <select
             v-model="layout"
-            :items="layoutOptions"
-            value-key="value"
             :disabled="upload.isBusy.value"
-            class="w-full"
-          />
-        </UFormField>
+            class="form-control"
+          >
+            <option
+              v-for="option in layoutOptions"
+              :key="option.value"
+              :value="option.value"
+            >
+              {{ option.label }}
+            </option>
+          </select>
+        </FormField>
 
-        <UFormField
+        <FormField
+          as="div"
           :label="t('compose.background')"
           :description="auth.user.value?.background ? t('compose.backgroundHintDefault') : t('compose.backgroundHint')"
         >
@@ -488,13 +522,11 @@ const progressLabel = computed(() => {
             :disabled="upload.isBusy.value"
             @remove="useDefaultBackground = false"
           />
-        </UFormField>
+        </FormField>
       </div>
 
-      <UAlert
+      <AppAlert
         v-if="upload.errorMessage.value"
-        icon="i-lucide-circle-alert"
-        variant="subtle"
         :description="upload.errorMessage.value"
       />
 
@@ -511,7 +543,7 @@ const progressLabel = computed(() => {
         </p>
       </div>
 
-      <UButton
+      <AppButton
         :label="t('compose.send')"
         :loading="upload.isBusy.value"
         :disabled="!canSubmit"

@@ -551,6 +551,15 @@ html.menu-open {
   }
 }
 
+/* While the curtain of a page change is down, the reveals on the page behind it
+   hold still: one that ran under the cover would be over before anyone saw it.
+   The two above wait in script, through `useCurtain`; these start on their own
+   the moment they are painted, so they are paused where they stand instead. */
+:root[data-curtain="down"] .split-text--immediate .split-text__piece,
+:root[data-curtain="down"] .fade-in-bottom--immediate {
+  animation-play-state: paused;
+}
+
 /* Anyone who has asked for less motion gets the text and the blocks, immediately,
    in place. */
 @media (prefers-reduced-motion: reduce) {
