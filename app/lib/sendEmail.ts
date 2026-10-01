@@ -1,9 +1,9 @@
-import nodemailer from 'nodemailer'
+import nodemailer, { type Transporter } from 'nodemailer'
 import { logger } from '../../server/utils/logger'
 
 // One shared transporter: nodemailer pools connections internally, and building
 // a new one per mail would re-do the SMTP handshake every time.
-let transporter: nodemailer.Transporter | null = null
+let transporter: Transporter | null = null
 
 function getTransporter() {
   if (transporter) return transporter

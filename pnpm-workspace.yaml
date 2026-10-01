@@ -32,12 +32,15 @@ overrides:
   tar@<7.5.22: ^7.5.22
   # The one forced major bump. The advisory for !!omap resolution states the fix
   # was not backported to 3.x or 4.x, so staying on 4 cannot clear it.
-  js-yaml@4: ^5.3.0
-  brace-expansion@2: ^2.1.4
-  brace-expansion@5: ^5.0.9
+  js-yaml@4: ^5.4.1
+  # A caret range here does not move on its own: once the lockfile holds a
+  # version that satisfies it, that version stays. Each new advisory in the same
+  # line therefore means raising the floor, as with these two.
+  brace-expansion@2: ^2.1.7
+  brace-expansion@5: ^5.0.12
   nanoid@3: ^3.3.18
   svgo@4: ^4.1.0
-  # Reached through nuxt, @nuxt/ui, @nuxt/eslint and @nuxtjs/mcp-toolkit.
+  # Reached through nuxt, @nuxt/eslint and @nuxtjs/mcp-toolkit.
   hono@4: ^4.13.5
   # Reached through nuxt, @nuxt/nitro-server and @nuxtjs/i18n, which ask for
   # ^5.8.2 — the range already allows the fix, the lockfile was simply holding
@@ -48,48 +51,14 @@ overrides:
   '@babel/core@7': ^7.29.7
   # Reached through ajv, which asks for ^3.0.1 — the range already allows the
   # fix, the lockfile was simply holding an older resolution.
-  fast-uri@>=3.0.0 <3.1.6: ^3.1.6
+  fast-uri@>=3.0.0 <3.1.8: ^3.1.8
   # Via express/body-parser. Scoped to the affected window so a copy outside it
   # is left where it is.
   qs@>=6.14.2 <=6.15.3: ^6.16.0
-  # Tiptap arrives as auto-installed *peers* of @nuxt/ui, declared as `^3` — so
-  # the advisory version satisfies the range and nothing will ever move it on its
-  # own. Every package has to be listed because they peer-pin @tiptap/core to an
-  # exact version: raising core alone leaves 36 siblings demanding the old one.
-  '@tiptap/core@3': ^3.30.4
-  '@tiptap/extension-blockquote@3': ^3.30.4
-  '@tiptap/extension-bold@3': ^3.30.4
-  '@tiptap/extension-bubble-menu@3': ^3.30.4
-  '@tiptap/extension-bullet-list@3': ^3.30.4
-  '@tiptap/extension-code@3': ^3.30.4
-  '@tiptap/extension-code-block@3': ^3.30.4
-  '@tiptap/extension-collaboration@3': ^3.30.4
-  '@tiptap/extension-document@3': ^3.30.4
-  '@tiptap/extension-drag-handle@3': ^3.30.4
-  '@tiptap/extension-drag-handle-vue-3@3': ^3.30.4
-  '@tiptap/extension-dropcursor@3': ^3.30.4
-  '@tiptap/extension-floating-menu@3': ^3.30.4
-  '@tiptap/extension-gapcursor@3': ^3.30.4
-  '@tiptap/extension-hard-break@3': ^3.30.4
-  '@tiptap/extension-heading@3': ^3.30.4
-  '@tiptap/extension-horizontal-rule@3': ^3.30.4
-  '@tiptap/extension-image@3': ^3.30.4
-  '@tiptap/extension-italic@3': ^3.30.4
-  '@tiptap/extension-link@3': ^3.30.4
-  '@tiptap/extension-list@3': ^3.30.4
-  '@tiptap/extension-list-item@3': ^3.30.4
-  '@tiptap/extension-list-keymap@3': ^3.30.4
-  '@tiptap/extension-mention@3': ^3.30.4
-  '@tiptap/extension-node-range@3': ^3.30.4
-  '@tiptap/extension-ordered-list@3': ^3.30.4
-  '@tiptap/extension-paragraph@3': ^3.30.4
-  '@tiptap/extension-placeholder@3': ^3.30.4
-  '@tiptap/extension-strike@3': ^3.30.4
-  '@tiptap/extension-text@3': ^3.30.4
-  '@tiptap/extension-underline@3': ^3.30.4
-  '@tiptap/extensions@3': ^3.30.4
-  '@tiptap/markdown@3': ^3.30.4
-  '@tiptap/pm@3': ^3.30.4
-  '@tiptap/starter-kit@3': ^3.30.4
-  '@tiptap/suggestion@3': ^3.30.4
-  '@tiptap/vue-3@3': ^3.30.4
+  # Reached through express-rate-limit, which the MCP SDK brings and which asks
+  # for ^10.2.0 — the range already allows the fix, the lockfile was simply
+  # holding 10.5.0.
+  ip-address@>=10.0.0 <10.7.1: ^10.7.1
+  # Reached through nuxt, which asks for ^8.8.0 — same story: allowed by the
+  # range, held back by the lockfile.
+  undici@>=8.0.0 <8.10.2: ^8.10.2

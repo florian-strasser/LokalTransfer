@@ -1,5 +1,25 @@
 # Changelog
 
+## v0.3.1
+
+### Security
+
+- **Nodemailer 10.** The mail library moves from 9.1.1 to 10.0.13, which clears
+  five advisories — two of them denial-of-service issues in its address parser.
+  Its one breaking change is requiring Node.js 20, which LokalTransfer already
+  does.
+
+- **undici 8.11.2**, reached through Nuxt: eleven advisories, among them a TLS
+  certificate validation bypass, a cache poisoning issue and several ways to
+  crash the process over a WebSocket.
+
+- **ip-address 10.7.2**, reached through the MCP server's rate limiter: four
+  advisories about how addresses are classified and compared, including the
+  unrecognised NAT64 local-use range.
+
+- **brace-expansion, js-yaml and fast-uri** raised to their fixed releases, for
+  eight further advisories between them.
+
 ## v0.3.0
 
 ### Improvements
