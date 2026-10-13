@@ -72,6 +72,12 @@ export async function deleteTransfers(db: Pool, transferIds: number[], event?: H
       `DELETE FROM \`transfer_recipients\` WHERE \`transfer\` IN (${placeholders})`,
       transferIds
     )
+    // Uploads that were still arriving, and the record of the ones that finished.
+    // Their partial files went with the directory above.
+    await conn.execute(
+      `DELETE FROM \`transfer_uploads\` WHERE \`transfer\` IN (${placeholders})`,
+      transferIds
+    )
     await conn.execute(`DELETE FROM \`transfers\` WHERE \`id\` IN (${placeholders})`, transferIds)
     await conn.commit()
   } catch (error) {

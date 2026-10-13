@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { LogOut } from 'lucide-vue-next'
+import { LogOut } from '@lucide/vue'
 
 // The guest upload page: the whole reason an outside contact has an account here.
 // They arrive via a magic link, pick which team member should get the files, and

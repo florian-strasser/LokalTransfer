@@ -69,6 +69,10 @@ curl -s -X POST "$BASE/api/transfers/$ID/send" -H "x-api-key: $KEY"
 | `GET` | [`/api/transfers`](/api/transfers) | Transfers you sent and received |
 | `POST` | [`/api/transfers`](/api/transfers) | Create a draft |
 | `POST` | [`/api/transfers/:id/files`](/api/upload) | Upload one file |
+| `POST` | [`/api/transfers/:id/uploads`](/api/upload#resumable-uploads) | Announce a file to send in pieces |
+| `PATCH` | [`/api/transfers/:id/uploads/:uploadId`](/api/upload#resumable-uploads) | Send a piece |
+| `GET` | [`/api/transfers/:id/uploads/:uploadId`](/api/upload#resumable-uploads) | How far an upload has got |
+| `DELETE` | [`/api/transfers/:id/uploads/:uploadId`](/api/upload#resumable-uploads) | Withdraw an unfinished upload |
 | `POST` | [`/api/transfers/:id/send`](/api/send) | Deliver it |
 | `DELETE` | [`/api/transfers/:id`](/api/transfers) | Revoke it — files erased |
 | `GET` | [`/api/download/:token`](/api/download) | Public transfer contents |

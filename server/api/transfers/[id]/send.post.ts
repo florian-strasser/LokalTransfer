@@ -22,7 +22,7 @@ export default defineEventHandler(async (event) => {
     const result = await sendTransferById(event, db, transferId, auth.user)
 
     if (!result.ok) {
-      const status = result.reason === 'ALREADY_SENT'
+      const status = result.reason === 'ALREADY_SENT' || result.reason === 'UPLOADS_INCOMPLETE'
         ? 409
         : result.reason === 'NO_FILES' ? 400 : 404
       setResponseStatus(event, status)

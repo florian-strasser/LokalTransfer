@@ -1,5 +1,80 @@
 # Changelog
 
+## v0.4.0
+
+### Added
+
+- **Resumable uploads.** Files now go up in 16 MB pieces, and the server keeps
+  every byte that reaches it. When the connection drops, the file's row says so
+  and the upload carries on by itself from the last byte that arrived, trying
+  for about a minute; if it is still down after that, pressing "Send" again
+  picks up where it stopped instead of starting a multi-gigabyte upload over.
+  The pieces are an API of their own (`POST`, `PATCH`, `GET` and `DELETE` on
+  `/api/transfers/:id/uploads`), documented beside the single-request upload,
+  which stays as it was. A transfer cannot be sent while one of its files is
+  still arriving (`409 UPLOADS_INCOMPLETE`).
+
+### Improvements
+
+- **Copy buttons say when copying did not work.** A browser that refused the
+  clipboard used to leave the button looking as if nothing had happened, and on
+  an instance reached over plain http the button did nothing at all. Copying
+  now falls back to the older selection-based way, and tells you to copy by hand
+  if that fails too.
+
+- **A file that can no longer be read is named as such.** A file renamed, moved
+  or changed after it was added to a transfer cannot be uploaded by the browser;
+  that used to surface as a generic upload failure.
+
+- **Icons come from `@lucide/vue`**, the successor to the now-deprecated
+  `lucide-vue-next`. Nothing looks different.
+
+- **A reverse proxy needs room for one piece, not one file.** With the web
+  interface sending 16 MB pieces, a body limit of 32 MB is enough for it; only
+  scripts that upload whole files in one request still need it as large as the
+  file.
+
+### Fixed
+
+- **Uploads that take longer than five minutes no longer break off.** Node
+  allows five minutes for a whole request, and nothing had lifted that for
+  uploads — so on a connection too slow to deliver a file in that time, the
+  upload was cut off however healthy the connection, and the browser reported
+  it as a lost network connection. An upload may now take as long as it needs;
+  one that delivers nothing for two minutes is dropped instead, and its
+  half-written file with it.
+
+- **A retry after a failed upload no longer sends an incomplete transfer.**
+  When one file of several failed and "Send" was pressed again, the files that
+  had already gone up were left behind in the first attempt's draft: the second
+  attempt reported success and the recipient got only the files that had failed
+  the first time. A retry now carries on with the same draft, and starts over
+  cleanly if the transfer's details or file list were changed in between.
+
+- **Icons above centred text sit in the middle again.** Since v0.3.0 the tick
+  on the "transfer sent" card, the upload and image icons in the dropzones, and
+  the lock and broken-link icons on the download and magic-link pages had been
+  stuck at the left edge. The "available until" line on the sent card is centred
+  with the rest of it.
+
+### Security
+
+- **Vue 3.5.43**, for a cross-site scripting issue in the server renderer.
+
+- **devalue 5.9.4 and seroval 1.6.9**, which serialise the data a page is
+  rendered with: eight advisories between them, one critical.
+
+- **proxy-addr 2.0.8 and the MCP SDK 1.32.1**, behind the MCP endpoint: an IP
+  spoofing issue and an OAuth client issue.
+
+- **shell-quote, source-map-js and postcss-selector-parser** raised to their
+  fixed releases.
+
+- Six advisories stay open because no fixed release exists yet that the project
+  can install: `braces` and `node-forge` have none published, and `simple-git`
+  is only fixed in 4.x, which the current Nuxt DevTools cannot load. All three
+  are build and development tooling; none is part of the built server.
+
 ## v0.3.1
 
 ### Security

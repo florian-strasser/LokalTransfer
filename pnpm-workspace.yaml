@@ -28,7 +28,7 @@ allowBuilds:
 # package.json is silently ignored, which is worth knowing because an override
 # written there looks applied and simply is not.
 overrides:
-  shell-quote@<1.10.0: ^1.10.0
+  shell-quote@<1.11.0: ^1.11.0
   tar@<7.5.22: ^7.5.22
   # The one forced major bump. The advisory for !!omap resolution states the fix
   # was not backported to 3.x or 4.x, so staying on 4 cannot clear it.
@@ -45,7 +45,7 @@ overrides:
   # Reached through nuxt, @nuxt/nitro-server and @nuxtjs/i18n, which ask for
   # ^5.8.2 — the range already allows the fix, the lockfile was simply holding
   # older resolutions. Pinned so it cannot slip back to them.
-  devalue@<5.9.2: ^5.9.2
+  devalue@<5.9.3: ^5.9.3
   launch-editor@<2.14.1: ^2.14.1
   esbuild@>=0.27.3 <0.28.1: ^0.28.2
   '@babel/core@7': ^7.29.7
@@ -62,3 +62,13 @@ overrides:
   # Reached through nuxt, which asks for ^8.8.0 — same story: allowed by the
   # range, held back by the lockfile.
   undici@>=8.0.0 <8.10.2: ^8.10.2
+  # Reached through @nuxt/vite-builder (serialising the page payload).
+  seroval@<1.6.3: ^1.6.3
+  # Reached through express, which the MCP SDK brings.
+  proxy-addr@<2.0.8: ^2.0.8
+  '@modelcontextprotocol/sdk@<1.31.0': ^1.31.0
+  source-map-js@<1.2.2: ^1.2.2
+  postcss-selector-parser@>=7.0.0 <7.1.6: ^7.1.6
+  # The server renderer's fix ships with Vue itself: every @vue/* package is
+  # pinned by `vue` to its own exact version, so moving `vue` moves them all.
+  vue@>=3.5.0 <3.5.42: ^3.5.42

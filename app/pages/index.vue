@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Mail, MailCheck, User } from 'lucide-vue-next'
+import { Mail, MailCheck, User } from '@lucide/vue'
 
 definePageMeta({ layout: 'blank' })
 

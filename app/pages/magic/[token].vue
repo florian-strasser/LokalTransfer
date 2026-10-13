@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Link2Off, LoaderCircle } from 'lucide-vue-next'
+import { Link2Off, LoaderCircle } from '@lucide/vue'
 
 definePageMeta({ layout: 'blank' })
 
@@ -50,7 +50,7 @@ onMounted(async () => {
       >
         <div class="space-y-2">
           <Link2Off
-            class="size-10 text-dimmed"
+            class="mx-auto size-10 text-dimmed"
             aria-hidden="true"
           />
           <h1 class="text-xl font-semibold text-highlighted">

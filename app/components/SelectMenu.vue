@@ -1,5 +1,5 @@
 <script setup lang="ts" generic="T extends string | number">
-import { Check } from 'lucide-vue-next'
+import { Check } from '@lucide/vue'
 
 // LokalBoards' select menu: a button styled as a form field, and a list under
 // it. Ported with one addition, `multiple`, for picking several colleagues as

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Component } from 'vue'
-import { LoaderCircle } from 'lucide-vue-next'
+import { LoaderCircle } from '@lucide/vue'
 
 // The one button. LokalBoards writes its buttons out as classes at each call
 // site; here there are enough of them, in enough states (loading, icon-only,

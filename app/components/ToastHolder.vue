@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { animate } from 'motion-v'
-import { Check, TriangleAlert } from 'lucide-vue-next'
+import { Check, TriangleAlert } from '@lucide/vue'
 import type { ToastInput } from '~/composables/useNotify'
 
 // LokalBoards' toast stack, with a title and a description where LokalBoards

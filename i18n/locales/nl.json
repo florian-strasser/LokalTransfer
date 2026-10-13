@@ -15,7 +15,9 @@
     "yes": "Ja",
     "no": "Nee",
     "never": "Nooit",
-    "unknownError": "Er is iets misgegaan. Probeer het opnieuw."
+    "unknownError": "Er is iets misgegaan. Probeer het opnieuw.",
+    "copyFailed": "Kopiëren is niet gelukt",
+    "copyFailedHint": "Selecteer de tekst en kopieer hem zelf."
   },
   "nav": {
     "dashboard": "Overdrachten",
@@ -114,6 +116,7 @@
     "send": "Overdracht versturen",
     "sending": "Versturen…",
     "uploading": "{done} van {total} wordt geüpload…",
+    "resuming": "Verbinding verbroken — wordt hervat…",
     "sent": "Uw overdracht is verstuurd.",
     "guestSent": "Bedankt — uw bestanden zijn verstuurd.",
     "sentTo": "De downloadlink is per e-mail naar {recipients} verstuurd.",
@@ -127,6 +130,7 @@
       "FILE_TOO_LARGE": "\"{filename}\" is groter dan de limiet van {size}.",
       "TOO_MANY_FILES": "U kunt maximaal {count} bestanden toevoegen.",
       "UPLOAD_FAILED": "\"{filename}\" kon niet worden geüpload.",
+      "FILE_UNREADABLE": "{filename} kan niet meer worden gelezen. Het bestand is mogelijk verplaatst, hernoemd of gewijzigd — voeg het opnieuw toe.",
       "INVALID_RETENTION": "Kies hoe lang de bestanden beschikbaar moeten blijven.",
       "INVALID_TRANSFER_PASSWORD": "Gebruik een wachtwoord van minimaal 4 tekens.",
       "INVALID_LAYOUT": "Kies een geldige weergave.",

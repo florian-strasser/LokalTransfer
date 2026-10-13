@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Clock, Download, FileIcon, FolderArchive, Link2Off, LockIcon } from 'lucide-vue-next'
+import { Clock, Download, FileIcon, FolderArchive, Link2Off, LockIcon } from '@lucide/vue'
 
 // The public download page. No account, no session — the token in the URL is the
 // credential, because recipients are people who have never heard of this app.
@@ -118,7 +118,7 @@ const otherFiles = computed(() => files.value.filter(file => !file.isImage))
       class="max-w-md rounded-2xl border border-default bg-default p-8 text-center shadow-xl"
     >
       <Link2Off
-        class="size-10 text-dimmed"
+        class="mx-auto size-10 text-dimmed"
         aria-hidden="true"
       />
       <h1 class="mt-3 text-xl font-semibold text-highlighted">
@@ -136,7 +136,7 @@ const otherFiles = computed(() => files.value.filter(file => !file.isImage))
     >
       <div class="text-center">
         <LockIcon
-          class="size-9 text-dimmed"
+          class="mx-auto size-9 text-dimmed"
           aria-hidden="true"
         />
         <h1 class="mt-3 text-lg font-semibold text-highlighted">

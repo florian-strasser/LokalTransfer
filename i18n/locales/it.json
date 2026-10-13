@@ -15,7 +15,9 @@
     "yes": "Sì",
     "no": "No",
     "never": "Mai",
-    "unknownError": "Qualcosa è andato storto. Riprovi."
+    "unknownError": "Qualcosa è andato storto. Riprovi.",
+    "copyFailed": "Impossibile copiare",
+    "copyFailedHint": "Selezioni il testo e lo copi manualmente."
   },
   "nav": {
     "dashboard": "Trasferimenti",
@@ -114,6 +116,7 @@
     "send": "Invia trasferimento",
     "sending": "Invio…",
     "uploading": "Caricamento di {done} su {total}…",
+    "resuming": "Connessione interrotta — ripresa in corso…",
     "sent": "Il trasferimento è stato inviato.",
     "guestSent": "Grazie — i suoi file sono stati inviati.",
     "sentTo": "Il link di download è stato inviato via e-mail a {recipients}.",
@@ -127,6 +130,7 @@
       "FILE_TOO_LARGE": "«{filename}» supera il limite di {size}.",
       "TOO_MANY_FILES": "Può allegare al massimo {count} file.",
       "UPLOAD_FAILED": "Impossibile caricare «{filename}».",
+      "FILE_UNREADABLE": "{filename} non può più essere letto. Il file potrebbe essere stato spostato, rinominato o modificato: lo aggiunga di nuovo.",
       "INVALID_RETENTION": "Scelga per quanto tempo i file devono restare disponibili.",
       "INVALID_TRANSFER_PASSWORD": "Usi una password di almeno 4 caratteri.",
       "INVALID_LAYOUT": "Scelga una presentazione valida.",

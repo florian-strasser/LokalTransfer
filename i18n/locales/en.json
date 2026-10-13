@@ -15,7 +15,9 @@
     "yes": "Yes",
     "no": "No",
     "never": "Never",
-    "unknownError": "Something went wrong. Please try again."
+    "unknownError": "Something went wrong. Please try again.",
+    "copyFailed": "Could not copy",
+    "copyFailedHint": "Select the text and copy it yourself."
   },
   "nav": {
     "dashboard": "Transfers",
@@ -114,6 +116,7 @@
     "send": "Send transfer",
     "sending": "Sending…",
     "uploading": "Uploading {done} of {total}…",
+    "resuming": "Connection lost — resuming…",
     "sent": "Your transfer has been sent.",
     "guestSent": "Thank you — your files have been sent.",
     "sentTo": "The download link has been e-mailed to {recipients}.",
@@ -127,6 +130,7 @@
       "FILE_TOO_LARGE": "\"{filename}\" is larger than the {size} limit.",
       "TOO_MANY_FILES": "You can attach at most {count} files.",
       "UPLOAD_FAILED": "\"{filename}\" could not be uploaded.",
+      "FILE_UNREADABLE": "{filename} can no longer be read. It may have been moved, renamed or changed — please add it again.",
       "INVALID_RETENTION": "Please choose how long the files should be available.",
       "INVALID_TRANSFER_PASSWORD": "Please use a password of at least 4 characters.",
       "INVALID_LAYOUT": "Please choose a valid presentation.",

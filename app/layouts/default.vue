@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Component } from 'vue'
-import { Inbox, LogOut, Upload, UserRoundPen, Users } from 'lucide-vue-next'
+import { Inbox, LogOut, Upload, UserRoundPen, Users } from '@lucide/vue'
 
 // The shell for every signed-in page. Public pages (sign-in, download) use the
 // `blank` layout instead, because a navigation bar full of links a stranger

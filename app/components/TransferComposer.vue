@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CalendarClock, CircleCheck, Copy, Link, Mail, Settings2, X } from 'lucide-vue-next'
+import { CalendarClock, CircleCheck, Copy, Link, Mail, Settings2, X } from '@lucide/vue'
 
 // The send form, shared by both flows.
 //
@@ -35,6 +35,7 @@ const { t } = useI18n()
 const { formatBytes, formatDateTime } = useFormat()
 const settings = useSettings()
 const notify = useNotify()
+const copy = useCopy()
 
 const upload = useTransferUpload()
 
@@ -203,8 +204,7 @@ function startAnother() {
 
 async function copyLink() {
   if (!upload.result.value) return
-  await navigator.clipboard.writeText(upload.result.value.downloadUrl)
-  notify.success(t('dashboard.linkCopied'))
+  await copy(upload.result.value.downloadUrl, t('dashboard.linkCopied'))
 }
 
 const progressLabel = computed(() => {
@@ -226,8 +226,10 @@ const progressLabel = computed(() => {
     class="rounded-2xl border border-default bg-default/90 p-6 shadow-xl backdrop-blur-md sm:p-8"
   >
     <div class="space-y-5 text-center">
+      <!-- `mx-auto`: an svg is a block, and `text-center` moves only inline
+           content. The same goes for every icon standing above centred text. -->
       <CircleCheck
-        class="size-12 text-primary"
+        class="mx-auto size-12 text-primary"
         aria-hidden="true"
       />
 
@@ -276,9 +278,11 @@ const progressLabel = computed(() => {
           </div>
         </FormField>
 
+        <!-- Centred like the rest of the card: it is a remark about the
+             transfer, not a hint belonging to the field above it. -->
         <p
           v-if="upload.result.value.expiresAt"
-          class="mt-2 text-sm text-muted"
+          class="mt-2 text-center text-sm text-muted"
         >
           {{ t('download.expires', { date: formatDateTime(upload.result.value.expiresAt) }) }}
         </p>

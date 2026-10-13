@@ -25,6 +25,7 @@ export async function resetState() {
   const db = setupDatabase()
   for (const table of [
     'transfer_files',
+    'transfer_uploads',
     'transfer_recipients',
     'transfers',
     'apikey',

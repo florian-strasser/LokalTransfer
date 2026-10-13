@@ -6,6 +6,8 @@ import Busboy from 'busboy'
 import { setupDatabase } from '../../../../app/lib/databaseSetup'
 import { fail, requireUser } from '../../../utils/auth'
 import { ensureTransferDir, generateStoredName } from '../../../utils/storage'
+import { suspendRequestTimeout, UPLOAD_IDLE_TIMEOUT_MS } from '../../../utils/requestTimeout'
+import { countFileSlots } from '../../../utils/uploads'
 import { cleanString, toPositiveInt } from '../../../utils/validation'
 import { logger } from '../../../utils/logger'
 
@@ -20,6 +22,10 @@ import { logger } from '../../../utils/logger'
 // One file per request, on purpose: the client gets true per-file progress, a
 // failure only costs that one file, and the size limit can be enforced mid-stream
 // instead of after everything has already arrived.
+//
+// This is the simple way in — one request, one file — and what a script with
+// `curl` wants. The web interface sends files in pieces instead, so that an
+// interrupted upload can carry on where it stopped: see utils/uploads.ts.
 
 interface UploadResult {
   filename: string
@@ -63,11 +69,8 @@ export default defineEventHandler(async (event) => {
     return { error: 'TRANSFER_ALREADY_SENT' }
   }
 
-  const [counts] = await db.execute<RowDataPacket[]>(
-    'SELECT COUNT(*) AS count FROM `transfer_files` WHERE `transfer` = ?',
-    [transferId]
-  )
-  if (Number(counts[0]?.count ?? 0) >= maxFiles) {
+  // Files still arriving through a resumable upload hold a slot too.
+  if (await countFileSlots(db, transferId) >= maxFiles) {
     setResponseStatus(event, 400)
     return { error: 'TOO_MANY_FILES' }
   }
@@ -88,6 +91,10 @@ export default defineEventHandler(async (event) => {
   }
 
   const dir = await ensureTransferDir(transferId, event)
+
+  // From here on this is a real upload by the draft's owner: it may run longer
+  // than Node allows a request by default.
+  const resumeRequestTimeout = suspendRequestTimeout(event)
 
   try {
     const result = await new Promise<UploadResult>((resolve, reject) => {
@@ -179,6 +186,20 @@ export default defineEventHandler(async (event) => {
       // If the client disconnects mid-upload, busboy's `close` may never fire,
       // so the partial file is cleaned up from the request stream instead.
       event.node.req.on('aborted', () => failWith(new Error('UPLOAD_ABORTED')))
+      // The same thing by the event Node has not deprecated. This promise must
+      // settle whenever the connection ends, by whatever route: until it does,
+      // the request time limit stays lifted for the whole server.
+      event.node.req.on('close', () => {
+        if (!event.node.req.complete) failWith(new Error('UPLOAD_ABORTED'))
+      })
+
+      // Silence, rather than total time, is what ends an upload early. The
+      // connection is closed so the client stops too, instead of sending the
+      // rest of the file to nobody.
+      event.node.req.setTimeout(UPLOAD_IDLE_TIMEOUT_MS, () => {
+        failWith(new Error('UPLOAD_ABORTED'))
+        event.node.req.destroy()
+      })
 
       event.node.req.pipe(busboy)
     })
@@ -216,5 +237,7 @@ export default defineEventHandler(async (event) => {
     logger.error('File upload error', error)
     setResponseStatus(event, 500)
     return { error: 'UPLOAD_FAILED' }
+  } finally {
+    resumeRequestTimeout()
   }
 })

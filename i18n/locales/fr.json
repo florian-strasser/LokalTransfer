@@ -15,7 +15,9 @@
     "yes": "Oui",
     "no": "Non",
     "never": "Jamais",
-    "unknownError": "Une erreur est survenue. Veuillez réessayer."
+    "unknownError": "Une erreur est survenue. Veuillez réessayer.",
+    "copyFailed": "Copie impossible",
+    "copyFailedHint": "Sélectionnez le texte et copiez-le vous-même."
   },
   "nav": {
     "dashboard": "Transferts",
@@ -114,6 +116,7 @@
     "send": "Envoyer le transfert",
     "sending": "Envoi…",
     "uploading": "Envoi de {done} sur {total}…",
+    "resuming": "Connexion interrompue — reprise…",
     "sent": "Votre transfert a été envoyé.",
     "guestSent": "Merci — vos fichiers ont été envoyés.",
     "sentTo": "Le lien de téléchargement a été envoyé par e-mail à {recipients}.",
@@ -127,6 +130,7 @@
       "FILE_TOO_LARGE": "« {filename} » dépasse la limite de {size}.",
       "TOO_MANY_FILES": "Vous pouvez joindre au plus {count} fichiers.",
       "UPLOAD_FAILED": "« {filename} » n'a pas pu être envoyé.",
+      "FILE_UNREADABLE": "{filename} ne peut plus être lu. Le fichier a peut-être été déplacé, renommé ou modifié — veuillez l'ajouter à nouveau.",
       "INVALID_RETENTION": "Veuillez choisir la durée de disponibilité des fichiers.",
       "INVALID_TRANSFER_PASSWORD": "Veuillez utiliser un mot de passe d'au moins 4 caractères.",
       "INVALID_LAYOUT": "Veuillez choisir une présentation valide.",

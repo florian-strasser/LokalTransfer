@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ImageIcon, X } from 'lucide-vue-next'
+import { ImageIcon, X } from '@lucide/vue'
 
 // A drag-and-drop field for one image: a transfer's background in the composer,
 // and a member's default background on the account page.
@@ -121,7 +121,7 @@ function clear() {
       class="px-4 py-5 text-center"
     >
       <ImageIcon
-        class="size-6 text-dimmed"
+        class="mx-auto size-6 text-dimmed"
         aria-hidden="true"
       />
       <p class="mt-2 text-sm font-medium text-default">

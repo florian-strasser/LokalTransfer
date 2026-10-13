@@ -31,6 +31,13 @@ export default defineMcpTool({
           `Transfer ${transferId} has already been sent. Use getTransfer to read its download link.`
         )
       }
+      if (result.reason === 'UPLOADS_INCOMPLETE') {
+        throw new McpError(
+          'VALIDATION',
+          `Transfer ${transferId} has a file that is still uploading. Finish the upload, or cancel it `
+          + `with DELETE /api/transfers/${transferId}/uploads/<uploadId>, before sending.`
+        )
+      }
       if (result.reason === 'NO_FILES') {
         throw new McpError(
           'VALIDATION',

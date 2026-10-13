@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { Copy, Download, ExternalLink, Inbox, Link, LockIcon, Plus, Send, Trash2 } from 'lucide-vue-next'
+import { Copy, Download, ExternalLink, Inbox, Link, LockIcon, Plus, Send, Trash2 } from '@lucide/vue'
 
 const { t } = useI18n()
 const { formatBytes, formatDate, formatDateTime, isExpired } = useFormat()
 const notify = useNotify()
+const copy = useCopy()
 
 useSeoMeta({ title: t('dashboard.title') })
 
@@ -49,8 +50,7 @@ function downloadUrl(token: string) {
 }
 
 async function copyLink(token: string) {
-  await navigator.clipboard.writeText(`${window.location.origin}/d/${token}`)
-  notify.success(t('dashboard.linkCopied'))
+  await copy(`${window.location.origin}/d/${token}`, t('dashboard.linkCopied'))
 }
 
 const deletingId = ref<number | null>(null)

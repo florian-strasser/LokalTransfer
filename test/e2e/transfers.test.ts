@@ -78,6 +78,33 @@ beforeEach(async () => {
   member = await createTestUser({ name: 'Member', role: 'admin' })
 })
 
+describe('pages', () => {
+  // Every other test here talks to the API. This one asks for the pages
+  // themselves, because a page can fail to render on the server while every
+  // endpoint behind it is healthy — which is exactly what happened when the
+  // icon package was replaced: the type check, the linter and the whole API
+  // suite passed, and every signed-in page answered 500.
+  it('renders every signed-in page on the server', async () => {
+    const cookie = await signIn(member)
+
+    for (const path of ['/dashboard', '/transfers/new', '/account', '/users', '/users/new']) {
+      const response = await fetch(url(path), { headers: { cookie } })
+      expect(response.status, path).toBe(200)
+      const html = await response.text()
+      // Rendered, with its icons, rather than an empty shell.
+      expect(html, path).toContain('<svg')
+      expect(html, path).not.toContain('statusCode')
+    }
+  })
+
+  it('renders the public pages on the server', async () => {
+    for (const path of ['/', '/lost-password', `/d/${'0'.repeat(64)}`]) {
+      const response = await fetch(url(path))
+      expect(response.status, path).toBe(200)
+    }
+  })
+})
+
 describe('streamed uploads', () => {
   it('accepts a large file and writes exactly its bytes to disk', async () => {
     // 12 MB — well past any buffer boundary, and large enough that a handler

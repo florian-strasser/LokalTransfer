@@ -15,7 +15,9 @@
     "yes": "Ja",
     "no": "Nein",
     "never": "Nie",
-    "unknownError": "Da ist etwas schiefgelaufen. Bitte versuchen Sie es erneut."
+    "unknownError": "Da ist etwas schiefgelaufen. Bitte versuchen Sie es erneut.",
+    "copyFailed": "Kopieren nicht möglich",
+    "copyFailedHint": "Markieren Sie den Text und kopieren Sie ihn selbst."
   },
   "nav": {
     "dashboard": "Übertragungen",
@@ -114,6 +116,7 @@
     "send": "Übertragung senden",
     "sending": "Wird gesendet…",
     "uploading": "{done} von {total} werden hochgeladen…",
+    "resuming": "Verbindung unterbrochen – wird fortgesetzt …",
     "sent": "Ihre Übertragung wurde gesendet.",
     "guestSent": "Vielen Dank — Ihre Dateien wurden gesendet.",
     "sentTo": "Der Download-Link wurde an {recipients} gesendet.",
@@ -127,6 +130,7 @@
       "FILE_TOO_LARGE": "„{filename}“ ist größer als das Limit von {size}.",
       "TOO_MANY_FILES": "Sie können höchstens {count} Dateien anhängen.",
       "UPLOAD_FAILED": "„{filename}“ konnte nicht hochgeladen werden.",
+      "FILE_UNREADABLE": "{filename} kann nicht mehr gelesen werden. Die Datei wurde möglicherweise verschoben, umbenannt oder geändert – bitte fügen Sie sie erneut hinzu.",
       "INVALID_RETENTION": "Bitte wählen Sie, wie lange die Dateien verfügbar sein sollen.",
       "INVALID_TRANSFER_PASSWORD": "Bitte verwenden Sie ein Passwort mit mindestens 4 Zeichen.",
       "INVALID_LAYOUT": "Bitte wählen Sie eine gültige Darstellung.",

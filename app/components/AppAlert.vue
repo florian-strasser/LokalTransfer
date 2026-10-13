@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Component } from 'vue'
-import { CircleAlert } from 'lucide-vue-next'
+import { CircleAlert } from '@lucide/vue'
 
 // LokalBoards' ErrorMessage, in the accent tint, sized to sit inside a form.
 // Used for confirmations as well as failures — a sent link, an expired one —

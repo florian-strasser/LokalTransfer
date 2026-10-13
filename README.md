@@ -18,7 +18,9 @@ as [LokalBoards](https://github.com/florian-strasser/LokalBoards).
 
 **Sending.** A team member picks files, types recipient addresses, chooses how
 long the files should stay available, and sends. Each recipient gets a mail with
-a download button; the sender gets a receipt with the same link.
+a download button; the sender gets a receipt with the same link. Files go up in
+pieces, so an upload interrupted by a dropped connection carries on where it
+stopped instead of starting over.
 
 **Receiving.** External contacts — an agency client, say — are added by an
 administrator. They have no password: they enter their address, receive a
@@ -289,6 +291,8 @@ call returns `409 TRANSFER_ALREADY_SENT` rather than mailing everyone twice.
 | `GET`    | `/api/transfers`            | Transfers you sent                             |
 | `POST`   | `/api/transfers`            | Create a draft                                 |
 | `POST`   | `/api/transfers/:id/files`  | Upload one file to a draft                     |
+| `POST`   | `/api/transfers/:id/uploads` | Announce a file to send in pieces (resumable) |
+| `PATCH`  | `/api/transfers/:id/uploads/:uploadId` | Send a piece; `GET` asks how far it got |
 | `POST`   | `/api/transfers/:id/send`   | Deliver it                                     |
 | `DELETE` | `/api/transfers/:id`        | Revoke it — files erased, link dead            |
 | `GET`    | `/api/recipients`           | Team members you can address                   |
@@ -534,9 +538,11 @@ pnpm version patch && git push --follow-tags
 
 - Put it behind a reverse proxy with TLS. Session cookies are marked `secure`
   when `NODE_ENV=production` or when `X-Forwarded-Proto: https` is present.
-- Raise the proxy's request body limit and timeouts to match
-  `NUXT_MAX_FILE_SIZE_MB` — nginx's 1 MB `client_max_body_size` default will
-  reject uploads long before the app sees them.
+- Raise the proxy's request body limit and timeouts — nginx's 1 MB
+  `client_max_body_size` default will reject uploads long before the app sees
+  them. The web interface sends files in 16 MB pieces, so 32 MB is enough for
+  it; match `NUXT_MAX_FILE_SIZE_MB` if scripts upload whole files in one
+  request.
 - `NUXT_STORAGE_PATH` must be on a volume that survives redeploys, and should be
   included in backups alongside the database. The two are only consistent
   together: files without rows are unreachable, rows without files 404.

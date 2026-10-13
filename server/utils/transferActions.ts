@@ -9,6 +9,7 @@ import {
   renderTransferEmail
 } from './emailTemplates'
 import { generateTransferToken, loadTransferFiles, loadTransferRecipients } from './transfers'
+import { countIncompleteUploads } from './uploads'
 import { applyDefaultBackground } from './userBackground'
 import { retentionToExpiry } from './validation'
 import { logger } from './logger'
@@ -121,7 +122,7 @@ export type SendTransferResult
     recipientCount: number
     notified: number
   }
-  | { ok: false, reason: 'NOT_FOUND' | 'ALREADY_SENT' | 'NO_FILES' }
+  | { ok: false, reason: 'NOT_FOUND' | 'ALREADY_SENT' | 'NO_FILES' | 'UPLOADS_INCOMPLETE' }
 
 /**
  * Finalise a draft: make it downloadable, start the retention clock, notify
@@ -149,6 +150,11 @@ export async function sendTransferById(
   // Idempotent: a double-click on Send, or a retrying agent, shouldn't mail
   // everyone twice.
   if (transfer.status !== 'draft') return { ok: false, reason: 'ALREADY_SENT' }
+
+  // A file that is still arriving is not left out quietly: the sender thinks it
+  // is part of this transfer, and so would the recipient. The upload has to be
+  // finished or withdrawn first.
+  if (await countIncompleteUploads(db, transferId) > 0) return { ok: false, reason: 'UPLOADS_INCOMPLETE' }
 
   const files = await loadTransferFiles(db, transferId)
   if (files.length === 0) return { ok: false, reason: 'NO_FILES' }

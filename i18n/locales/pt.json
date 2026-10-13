@@ -15,7 +15,9 @@
     "yes": "Sim",
     "no": "Não",
     "never": "Nunca",
-    "unknownError": "Algo correu mal. Tente novamente."
+    "unknownError": "Algo correu mal. Tente novamente.",
+    "copyFailed": "Não foi possível copiar",
+    "copyFailedHint": "Selecione o texto e copie-o manualmente."
   },
   "nav": {
     "dashboard": "Transferências",
@@ -114,6 +116,7 @@
     "send": "Enviar transferência",
     "sending": "A enviar…",
     "uploading": "A carregar {done} de {total}…",
+    "resuming": "Ligação interrompida — a retomar…",
     "sent": "A sua transferência foi enviada.",
     "guestSent": "Obrigado — os seus ficheiros foram enviados.",
     "sentTo": "A ligação de descarga foi enviada por e-mail para {recipients}.",
@@ -127,6 +130,7 @@
       "FILE_TOO_LARGE": "«{filename}» excede o limite de {size}.",
       "TOO_MANY_FILES": "Pode anexar no máximo {count} ficheiros.",
       "UPLOAD_FAILED": "Não foi possível carregar «{filename}».",
+      "FILE_UNREADABLE": "Já não é possível ler {filename}. O ficheiro pode ter sido movido, renomeado ou alterado — adicione-o novamente.",
       "INVALID_RETENTION": "Escolha durante quanto tempo os ficheiros devem ficar disponíveis.",
       "INVALID_TRANSFER_PASSWORD": "Utilize uma palavra-passe com pelo menos 4 caracteres.",
       "INVALID_LAYOUT": "Escolha uma apresentação válida.",

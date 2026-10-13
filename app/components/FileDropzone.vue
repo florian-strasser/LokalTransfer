@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CircleAlert, CircleCheck, CloudUpload, FileIcon, Plus, X } from 'lucide-vue-next'
+import { CircleAlert, CircleCheck, CloudUpload, FileIcon, Plus, X } from '@lucide/vue'
 import type { QueuedFile } from '~/composables/useTransferUpload'
 
 const props = defineProps<{
@@ -64,7 +64,8 @@ const totalSize = computed(() => props.files.reduce((sum, item) => sum + item.fi
         :class="compact ? 'px-4 py-6' : 'px-6 py-10'"
       >
         <CloudUpload
-          :class="compact ? 'size-6 text-dimmed' : 'size-8 text-dimmed'"
+          class="mx-auto text-dimmed"
+          :class="compact ? 'size-6' : 'size-8'"
           aria-hidden="true"
         />
         <p
@@ -126,6 +127,15 @@ const totalSize = computed(() => props.files.reduce((sum, item) => sum + item.fi
               class="text-xs text-primary"
             >
               {{ item.error }}
+            </p>
+            <!-- The connection dropped and the upload is waiting to carry on by
+                 itself. Said in words, because a bar that has merely stopped
+                 moving looks exactly like a slow one. -->
+            <p
+              v-else-if="item.resuming"
+              class="text-xs text-primary"
+            >
+              {{ t('compose.resuming') }}
             </p>
             <p
               v-else

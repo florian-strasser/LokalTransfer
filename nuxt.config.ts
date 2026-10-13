@@ -133,6 +133,16 @@ export default defineNuxtConfig({
     emailTransport: process.env.NUXT_EMAIL_TRANSPORT || ''
   },
 
+  // The icons have to be built into the server bundle rather than loaded beside
+  // it. The bundle carries its own copy of Vue, and an icon from @lucide/vue
+  // asks Vue for its shared defaults (`inject`) while it renders — left
+  // external, it asked the *other* copy, the one in node_modules, which knows of
+  // no component being rendered. Every page with an icon then failed on the
+  // server with "useLucideProps(...) is undefined".
+  build: {
+    transpile: ['@lucide/vue']
+  },
+
   compatibilityDate: '2026-06-30',
 
   nitro: {

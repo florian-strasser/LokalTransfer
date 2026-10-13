@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Copy, Plus, Trash2 } from 'lucide-vue-next'
+import { Copy, Plus, Trash2 } from '@lucide/vue'
 
 // API key management, on the account page.
 //
@@ -13,6 +13,7 @@ const { t } = useI18n()
 const { formatDateTime } = useFormat()
 const { apiErrorMessage } = useApiError()
 const notify = useNotify()
+const copy = useCopy()
 
 interface ApiKey {
   id: string
@@ -77,8 +78,7 @@ async function create() {
 
 async function copyFresh() {
   if (!freshKey.value) return
-  await navigator.clipboard.writeText(freshKey.value)
-  notify.success(t('apiKeys.copied'))
+  await copy(freshKey.value, t('apiKeys.copied'))
 }
 
 // --- Revoking ----------------------------------------------------------------

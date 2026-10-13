@@ -15,7 +15,9 @@
     "yes": "Tak",
     "no": "Nie",
     "never": "Nigdy",
-    "unknownError": "Coś poszło nie tak. Spróbuj ponownie."
+    "unknownError": "Coś poszło nie tak. Spróbuj ponownie.",
+    "copyFailed": "Nie udało się skopiować",
+    "copyFailedHint": "Zaznacz tekst i skopiuj go ręcznie."
   },
   "nav": {
     "dashboard": "Transfery",
@@ -114,6 +116,7 @@
     "send": "Wyślij transfer",
     "sending": "Wysyłanie…",
     "uploading": "Przesyłanie {done} z {total}…",
+    "resuming": "Połączenie przerwane — wznawianie…",
     "sent": "Transfer został wysłany.",
     "guestSent": "Dziękujemy — pliki zostały wysłane.",
     "sentTo": "Link do pobrania został wysłany e-mailem do {recipients}.",
@@ -127,6 +130,7 @@
       "FILE_TOO_LARGE": "„{filename}” przekracza limit {size}.",
       "TOO_MANY_FILES": "Możesz dołączyć maksymalnie {count} plików.",
       "UPLOAD_FAILED": "Nie udało się przesłać „{filename}”.",
+      "FILE_UNREADABLE": "Nie można już odczytać pliku {filename}. Mógł zostać przeniesiony, przemianowany lub zmieniony — dodaj go ponownie.",
       "INVALID_RETENTION": "Wybierz, jak długo pliki mają być dostępne.",
       "INVALID_TRANSFER_PASSWORD": "Użyj hasła o długości co najmniej 4 znaków.",
       "INVALID_LAYOUT": "Wybierz prawidłowy układ.",

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Pencil, Trash2, UserCheck, UserPlus, UserX } from 'lucide-vue-next'
+import { Pencil, Trash2, UserCheck, UserPlus, UserX } from '@lucide/vue'
 
 const { t } = useI18n()
 const { user: currentUser } = useAuth()

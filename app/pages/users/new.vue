@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowLeft, RefreshCw } from 'lucide-vue-next'
+import { ArrowLeft, RefreshCw } from '@lucide/vue'
 
 const { t } = useI18n()
 const notify = useNotify()

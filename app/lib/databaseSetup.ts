@@ -325,6 +325,38 @@ const migrations: Migration[] = [
       if (await columnExists(db, 'user', 'backgroundName')) return
       await db.execute('ALTER TABLE `user` ADD COLUMN `backgroundName` varchar(255) DEFAULT NULL')
     }
+  },
+
+  {
+    // Resumable uploads: a file arriving in pieces.
+    //
+    // A row is the promise of a file — its name, its final size and the stored
+    // name it will have — made before the first byte arrives. The bytes go into
+    // `<storedName>.part` in the transfer's directory, and how many have arrived
+    // is never stored here: it is the size of that file, which is the one thing
+    // that cannot disagree with what is actually on disk after a connection has
+    // died half-way through a write.
+    //
+    // `fileId` is set when the last byte lands and the part becomes a real
+    // `transfer_files` row. The upload row is kept rather than deleted, because
+    // the client that sent that last piece may never hear that it arrived: when
+    // it asks again, the answer has to be "complete, and here is the file", not
+    // "no such upload".
+    id: '0006_transfer_uploads',
+    up: async (db) => {
+      await db.execute(`CREATE TABLE IF NOT EXISTS \`transfer_uploads\` (
+        \`id\` varchar(36) NOT NULL,
+        \`transfer\` int NOT NULL,
+        \`filename\` varchar(255) NOT NULL,
+        \`storedName\` varchar(255) NOT NULL,
+        \`mimeType\` varchar(150) NOT NULL DEFAULT 'application/octet-stream',
+        \`size\` bigint NOT NULL,
+        \`fileId\` int DEFAULT NULL,
+        \`createdAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (\`id\`),
+        KEY \`transfer_uploads_transfer\` (\`transfer\`)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;`)
+    }
   }
 ]
 

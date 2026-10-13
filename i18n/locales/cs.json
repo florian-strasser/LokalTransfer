@@ -15,7 +15,9 @@
     "yes": "Ano",
     "no": "Ne",
     "never": "Nikdy",
-    "unknownError": "Něco se pokazilo. Zkuste to prosím znovu."
+    "unknownError": "Něco se pokazilo. Zkuste to prosím znovu.",
+    "copyFailed": "Kopírování se nezdařilo",
+    "copyFailedHint": "Označte text a zkopírujte ho ručně."
   },
   "nav": {
     "dashboard": "Přenosy",
@@ -114,6 +116,7 @@
     "send": "Odeslat přenos",
     "sending": "Odesílání…",
     "uploading": "Nahrávání {done} z {total}…",
+    "resuming": "Spojení přerušeno — pokračuji…",
     "sent": "Váš přenos byl odeslán.",
     "guestSent": "Děkujeme — vaše soubory byly odeslány.",
     "sentTo": "Odkaz ke stažení byl odeslán e-mailem na {recipients}.",
@@ -127,6 +130,7 @@
       "FILE_TOO_LARGE": "„{filename}“ překračuje limit {size}.",
       "TOO_MANY_FILES": "Můžete připojit nejvýše {count} souborů.",
       "UPLOAD_FAILED": "„{filename}“ se nepodařilo nahrát.",
+      "FILE_UNREADABLE": "Soubor {filename} už nelze přečíst. Možná byl přesunut, přejmenován nebo změněn — přidejte ho prosím znovu.",
       "INVALID_RETENTION": "Zvolte prosím, jak dlouho mají být soubory dostupné.",
       "INVALID_TRANSFER_PASSWORD": "Použijte prosím heslo o délce alespoň 4 znaků.",
       "INVALID_LAYOUT": "Zvolte prosím platné zobrazení.",

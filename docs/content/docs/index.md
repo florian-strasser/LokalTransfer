@@ -93,8 +93,10 @@ Every account after the first is created from **Users** in the app.
 Two settings catch people out:
 
 - **Raise the body limit.** nginx defaults `client_max_body_size` to 1&nbsp;MB and
-  will reject uploads long before the app sees them. Match it to
-  `NUXT_MAX_FILE_SIZE_MB`, and raise the read timeouts while you are there.
+  will reject uploads long before the app sees them. The web interface sends
+  files in 16&nbsp;MB pieces, so 32&nbsp;MB is enough for it; match
+  `NUXT_MAX_FILE_SIZE_MB` if scripts will upload whole files in one request
+  through the API. Raise the read timeouts while you are there.
 - **Forward the protocol.** Session cookies are marked `secure` when
   `NODE_ENV=production` or when `X-Forwarded-Proto: https` is present. Without
   one of those, a browser on HTTPS discards the cookie and sign-in appears to do
