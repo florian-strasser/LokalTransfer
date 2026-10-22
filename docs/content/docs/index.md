@@ -32,7 +32,7 @@ starts. See [Docker](/docs/docker) for the full picture, including
 
 ## From source
 
-Requires Node 20+ and a MySQL 8 database.
+Requires Node 22 — 22.23.4 or later — and a MySQL 8 database.
 
 ```bash
 git clone https://github.com/florian-strasser/LokalTransfer.git

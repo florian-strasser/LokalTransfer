@@ -1,5 +1,36 @@
 # Changelog
 
+## v0.4.1
+
+### Security
+
+- **The image runs Node 22.23.4.** It was still on 22.17.0, from June 2025, so
+  besides this week's Node security release it had missed the ones on the 22
+  line before it. Of this week's fixes, the two that concern LokalTransfer are
+  about how a TLS certificate is matched to the host it was meant for: they
+  apply to the connections the server opens itself, to the mail server and —
+  with `NUXT_MYSQL_SSL` — to the database. The release also takes a compromised
+  certificate authority out of Node's own list. The most severe one, in Node's
+  Brotli decoder, is not reachable here: the server makes no requests of its own
+  and decodes no Brotli. It is fixed with the rest all the same.
+
+  Updating the image is all it takes; nothing in the app changes, and every test
+  passes on 22.23.4. Running from source or on a managed host? Use Node 22.23.4
+  or later — the documented requirement said Node 20, which no longer receives
+  security releases at all.
+
+- **Toolchain updates:** Vite 8.3.5 (several advisories on its development
+  server), `launch-editor` 2.14.2, `hono` 4.13.13 and Vitest 4.1.12. None of
+  them is in what ships.
+
+- **`simple-git` is gone.** Its four advisories, two of them critical, could not
+  be fixed in place: only its 4.x line has the fixes, and the Nuxt DevTools that
+  brought it could not load that. DevTools 3.4.3 no longer uses it at all, and is
+  inside the range Nuxt already asks for.
+
+- **What is left in `pnpm audit` is `braces` and `node-forge`,** both still
+  without a fixed release, both only in the build toolchain.
+
 ## v0.4.0
 
 ### Added

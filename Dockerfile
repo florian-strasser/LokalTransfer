@@ -1,4 +1,7 @@
-ARG NODE_VERSION=22.17.0
+# The Node every image runs, in the build and in the container itself. Keep it on
+# the newest 22.x: a Node security release reaches the people running this image
+# through this line or not at all.
+ARG NODE_VERSION=22.23.4
 ARG MYSQL_VERSION=8.4
 
 # --- Build ---------------------------------------------------------------

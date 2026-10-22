@@ -41,12 +41,12 @@ overrides:
   nanoid@3: ^3.3.18
   svgo@4: ^4.1.0
   # Reached through nuxt, @nuxt/eslint and @nuxtjs/mcp-toolkit.
-  hono@4: ^4.13.5
+  hono@4: ^4.13.11
   # Reached through nuxt, @nuxt/nitro-server and @nuxtjs/i18n, which ask for
   # ^5.8.2 — the range already allows the fix, the lockfile was simply holding
   # older resolutions. Pinned so it cannot slip back to them.
   devalue@<5.9.3: ^5.9.3
-  launch-editor@<2.14.1: ^2.14.1
+  launch-editor@<2.14.2: ^2.14.2
   esbuild@>=0.27.3 <0.28.1: ^0.28.2
   '@babel/core@7': ^7.29.7
   # Reached through ajv, which asks for ^3.0.1 — the range already allows the
@@ -64,6 +64,13 @@ overrides:
   undici@>=8.0.0 <8.10.2: ^8.10.2
   # Reached through @nuxt/vite-builder (serialising the page payload).
   seroval@<1.6.3: ^1.6.3
+  # The development server's advisories. 8.3 is inside the range both Nuxt
+  # versions in the tree ask for (^8.1.5 and ^8.2.0).
+  vite@>=8.0.0 <8.2.4: ^8.2.4
+  # Devtools 3.4.3 stopped using simple-git, which carried four advisories (two
+  # critical) whose fix only exists in its 4.x line — a version the earlier
+  # devtools could not load. Raising devtools takes simple-git out of the tree.
+  '@nuxt/devtools@>=3.0.0 <3.4.3': ^3.4.3
   # Reached through express, which the MCP SDK brings.
   proxy-addr@<2.0.8: ^2.0.8
   '@modelcontextprotocol/sdk@<1.31.0': ^1.31.0

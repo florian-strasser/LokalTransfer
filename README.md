@@ -44,7 +44,7 @@ on the list.
 
 ## Setup
 
-Requires Node 20+ and a MySQL 8 database.
+Requires Node 22 — 22.23.4 or later — and a MySQL 8 database.
 
 ```bash
 pnpm install
