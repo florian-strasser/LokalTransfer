@@ -60,6 +60,27 @@ export function cleanString(value: unknown, maxLength: number): string | null {
   return trimmed.slice(0, maxLength)
 }
 
+/**
+ * A file's name as the sender gave it, reduced to a name and nothing more.
+ *
+ * The browser only ever sends a plain name, but the API takes the name as free
+ * text, and it ends up as the name of an entry in the zip a recipient
+ * downloads. An entry called `docs/../../.bashrc` is extracted *outside* the
+ * folder the recipient chose by any unzip tool that does not guard against it —
+ * so a guest could aim a file at a team member's home directory. Whatever came
+ * before the last slash or backslash is dropped, and so are control characters;
+ * a name that is nothing but dots is no name at all.
+ */
+export function cleanFilename(value: unknown): string | null {
+  if (typeof value !== 'string') return null
+  const last = value.split(/[/\\]/).pop()!
+  // Without control characters, including a NUL that would cut the name short
+  // for anything written in C.
+  const name = [...last].filter(char => char >= ' ' && char !== '\u007f').join('')
+  if (/^\.*$/.test(name.trim())) return null
+  return cleanString(name, 255)
+}
+
 /** A positive integer id from a route parameter or body field. */
 export function toPositiveInt(value: unknown): number | null {
   const num = Number(value)

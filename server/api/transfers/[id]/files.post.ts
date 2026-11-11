@@ -8,7 +8,7 @@ import { fail, requireUser } from '../../../utils/auth'
 import { ensureTransferDir, generateStoredName } from '../../../utils/storage'
 import { suspendRequestTimeout, UPLOAD_IDLE_TIMEOUT_MS } from '../../../utils/requestTimeout'
 import { countFileSlots } from '../../../utils/uploads'
-import { cleanString, toPositiveInt } from '../../../utils/validation'
+import { cleanFilename, cleanString, toPositiveInt } from '../../../utils/validation'
 import { logger } from '../../../utils/logger'
 
 // Upload one file into a draft transfer.
@@ -161,7 +161,7 @@ export default defineEventHandler(async (event) => {
               return
             }
 
-            const filename = cleanString(originalName, 255) || 'file'
+            const filename = cleanFilename(originalName) || 'file'
             settled = true
             resolve({
               filename,

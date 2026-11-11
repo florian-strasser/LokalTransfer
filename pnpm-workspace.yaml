@@ -51,19 +51,19 @@ overrides:
   '@babel/core@7': ^7.29.7
   # Reached through ajv, which asks for ^3.0.1 — the range already allows the
   # fix, the lockfile was simply holding an older resolution.
-  fast-uri@>=3.0.0 <3.1.8: ^3.1.8
+  fast-uri@>=3.0.0 <3.1.9: ^3.1.9
   # Via express/body-parser. Scoped to the affected window so a copy outside it
   # is left where it is.
-  qs@>=6.14.2 <=6.15.3: ^6.16.0
+  qs@>=6.14.2 <6.16.1: ^6.16.1
   # Reached through express-rate-limit, which the MCP SDK brings and which asks
   # for ^10.2.0 — the range already allows the fix, the lockfile was simply
   # holding 10.5.0.
-  ip-address@>=10.0.0 <10.7.1: ^10.7.1
+  ip-address@>=10.0.0 <10.7.4: ^10.7.4
   # Reached through nuxt, which asks for ^8.8.0 — same story: allowed by the
   # range, held back by the lockfile.
-  undici@>=8.0.0 <8.10.2: ^8.10.2
+  undici@>=8.0.0 <8.12.2: ^8.12.2
   # Reached through @nuxt/vite-builder (serialising the page payload).
-  seroval@<1.6.3: ^1.6.3
+  seroval@<1.6.11: ^1.6.11
   # The development server's advisories. 8.3 is inside the range both Nuxt
   # versions in the tree ask for (^8.1.5 and ^8.2.0).
   vite@>=8.0.0 <8.2.4: ^8.2.4
@@ -76,6 +76,43 @@ overrides:
   '@modelcontextprotocol/sdk@<1.31.0': ^1.31.0
   source-map-js@<1.2.2: ^1.2.2
   postcss-selector-parser@>=7.0.0 <7.1.6: ^7.1.6
-  # The server renderer's fix ships with Vue itself: every @vue/* package is
-  # pinned by `vue` to its own exact version, so moving `vue` moves them all.
-  vue@>=3.5.0 <3.5.42: ^3.5.42
+  # Exactly 3.5.44, the version LokalBoards runs. 3.5.45 breaks the
+  # documentation site in the browser: every page's headings, paragraphs and
+  # code blocks hydrate into one run of plain text, while the HTML the build
+  # writes stays correct — so only opening the site shows it. Lift the pin once
+  # a later Vue renders /docs with its headings intact. (3.5.44 is also past the
+  # server renderer's advisory, fixed in 3.5.42.)
+  vue: 3.5.44
+  # Reached through @nuxtjs/i18n, which asks for ^11.4.8. The family pins itself
+  # to one exact version, so every member is raised together or the install
+  # ends up with two copies of the runtime.
+  vue-i18n@<11.4.14: ^11.4.14
+  '@intlify/core@<11.4.14': ^11.4.14
+  '@intlify/core-base@<11.4.14': ^11.4.14
+  '@intlify/shared@<11.4.14': ^11.4.14
+  '@intlify/message-compiler@<11.4.14': ^11.4.14
+  # Development server certificates (listhen) — never in the built app.
+  node-forge@<1.4.3: ^1.4.3
+  # Behind the MCP SDK and Nuxt's development server.
+  '@hono/node-server@<2.1.3': ^2.1.3
+  body-parser@>=2.0.0 <2.4.0: ^2.4.0
+  # The documentation site's sitemap.
+  fast-xml-parser@>=5.0.0 <5.11.3: ^5.11.3
+  serialize-javascript@>=7.0.0 <7.1.3: ^7.1.3
+  # Nothing here uses it — the tests run in Node's own environment — but vitest
+  # and @nuxt/test-utils declare it as an optional peer, and pnpm installs those.
+  happy-dom@<21.0.4: ^21.0.4
+  # Both fixed only in their next major version, forced for every package that
+  # has not moved yet — as LokalBoards does — after checking that each of them
+  # uses only what the new version still has. One did not: eslint-plugin-import-x
+  # imported `makeRe`, which minimatch 11 dropped; its 4.18 release, brought by
+  # @nuxt/eslint 1.17, accepts 11. minimatch ships, through archiver's
+  # readdir-glob; glob does not.
+  minimatch@<11.0.1: ^11.0.1
+  glob@<14.0.2: ^14.0.2
+  # The documentation site's content module still asks for zod 3, which has no
+  # fixed release. It already speaks zod 4 (it calls `z.toJSONSchema`), and the
+  # site comes out the same either way — compared file by file, and checked in
+  # the browser. As in LokalBoards; the override can go the day @nuxt/content
+  # asks for 4 itself.
+  zod@<4.6.6: ^4.6.7

@@ -44,11 +44,13 @@ const wrapperClass = computed(() => {
 </script>
 
 <template>
-  <!-- No background colour on this root: main.css already paints the page on
-       <body>, and an opaque background here would be painted *after* the fixed
-       AppBackground layer (which sits at a negative z-index inside the same
-       stacking context), hiding the image entirely. -->
   <div class="min-h-screen flex flex-col">
+    <!-- No background colour on this root: main.css already paints the page
+         on <body>, and an opaque background here would be painted *after* the
+         fixed AppBackground layer (which sits at a negative z-index inside the
+         same stacking context), hiding the image entirely. Inside the element
+         rather than above it: a layout must have a single root, and a comment
+         beside it is a second one. -->
     <!-- Centred on the viewport rather than sitting under a header that no longer
          exists. `m-auto` rather than `justify-center`: with a flex container,
          centring by justification clips the top of anything taller than the

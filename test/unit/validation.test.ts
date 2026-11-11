@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   RETENTION_OPTIONS,
+  cleanFilename,
   cleanString,
   isDownloadToken,
   isUuid,
@@ -114,6 +115,36 @@ describe('token shapes', () => {
   it('recognises a uuid', () => {
     expect(isUuid('3f2504e0-4f89-41d3-9a0c-0305e82c3301')).toBe(true)
     expect(isUuid('3f2504e0-4f89-41d3-9a0c')).toBe(false)
+  })
+})
+
+describe('cleanFilename', () => {
+  // The name becomes an entry in the zip a recipient extracts, so nothing that
+  // could address a different folder may survive.
+  it('keeps only the name, whatever path came before it', () => {
+    expect(cleanFilename('docs/../../.bashrc')).toBe('.bashrc')
+    expect(cleanFilename('../../evil.sh')).toBe('evil.sh')
+    expect(cleanFilename('/etc/passwd')).toBe('passwd')
+    expect(cleanFilename('..\\..\\Startup\\run.bat')).toBe('run.bat')
+    expect(cleanFilename('C:\\Windows\\win.ini')).toBe('win.ini')
+  })
+
+  it('leaves an ordinary name alone, underscores, spaces and all', () => {
+    expect(cleanFilename('Export_2026_10_13__Rohdaten.zip')).toBe('Export_2026_10_13__Rohdaten.zip')
+    expect(cleanFilename('Angebot (final) v2.pdf')).toBe('Angebot (final) v2.pdf')
+    expect(cleanFilename('Übertragung – Fotos.zip')).toBe('Übertragung – Fotos.zip')
+    expect(cleanFilename('.env.example')).toBe('.env.example')
+  })
+
+  it('drops control characters, a NUL included', () => {
+    expect(cleanFilename('report\u0000.pdf.exe')).toBe('report.pdf.exe')
+    expect(cleanFilename('line\nbreak.txt')).toBe('linebreak.txt')
+  })
+
+  it('has no name for nothing but dots, a trailing slash or a non-string', () => {
+    for (const value of ['..', '.', '...', 'folder/', '   ', '', 42, null]) {
+      expect(cleanFilename(value), String(value)).toBeNull()
+    }
   })
 })
 

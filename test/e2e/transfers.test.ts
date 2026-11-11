@@ -197,6 +197,53 @@ describe('download', () => {
     return draft
   }
 
+  it('never lets a file name address a folder outside the one the recipient chose', async () => {
+    // The name is free text through the API, and becomes the entry's name in the
+    // zip. Sent through both upload routes, so neither can store a path.
+    const cookie = await signIn(member)
+    const draft = await createDraft(cookie, { subject: 'Hostile names' })
+
+    const tmp = join(TEST_STORAGE, 'hostile.txt')
+    await fs.writeFile(tmp, 'contents')
+    const form = new FormData()
+    form.append('filename', 'docs/../../.bashrc')
+    form.append('file', new Blob([await fs.readFile(tmp)]), 'ignored.txt')
+    const single = await fetch(url(`/api/transfers/${draft.id}/files`), { method: 'POST', headers: { cookie }, body: form })
+    expect(single.status).toBe(200)
+    expect((await single.json() as { data: { filename: string } }).data.filename).toBe('.bashrc')
+
+    const announced = await $fetch<{ data: { id: string } }>(`/api/transfers/${draft.id}/uploads`, {
+      method: 'POST',
+      headers: { cookie, 'Content-Type': 'application/json' },
+      body: { filename: '..\\..\\Startup\\run.bat', size: 8 }
+    })
+    const piece = await fetch(url(`/api/transfers/${draft.id}/uploads/${announced.data.id}`), {
+      method: 'PATCH',
+      headers: { cookie, 'Upload-Offset': '0', 'Content-Type': 'application/octet-stream' },
+      body: 'contents'
+    })
+    expect((await piece.json() as { data: { file: { filename: string } } }).data.file.filename).toBe('run.bat')
+
+    // A name stored before this check existed: written straight into the row.
+    await setupDatabase().execute(
+      'UPDATE `transfer_files` SET `filename` = ? WHERE `transfer` = ? AND `filename` = ?',
+      ['a/../../legacy.txt', draft.id, '.bashrc']
+    )
+
+    await $fetch(`/api/transfers/${draft.id}/send`, { method: 'POST', headers: { cookie } })
+    const response = await fetch(url(`/api/download/${draft.token}/zip`))
+    const zipPath = join(TEST_STORAGE, 'hostile.zip')
+    await fs.writeFile(zipPath, Buffer.from(await response.arrayBuffer()))
+
+    const { execFile } = await import('node:child_process')
+    const { promisify } = await import('node:util')
+    const { stdout } = await promisify(execFile)('unzip', ['-Z1', zipPath])
+    expect(stdout.split('\n').filter(Boolean).sort()).toEqual(['legacy.txt', 'run.bat'])
+
+    await fs.rm(zipPath, { force: true })
+    await fs.rm(tmp, { force: true })
+  })
+
   it('serves a single file with its original name reattached', async () => {
     const cookie = await signIn(member)
     const draft = await sentTransferWithFiles(cookie, [['report.txt', 'the contents']])

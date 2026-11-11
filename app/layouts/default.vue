@@ -53,11 +53,13 @@ const isActive = (to?: string) =>
 </script>
 
 <template>
-  <!-- No background colour on this root: main.css already paints the page on
-       <body>, and an opaque background here would be painted *after* the fixed
-       AppBackground layer (which sits at a negative z-index inside the same
-       stacking context), hiding the image entirely. -->
   <div class="min-h-screen">
+    <!-- No background colour on this root: main.css already paints the page
+         on <body>, and an opaque background here would be painted *after* the
+         fixed AppBackground layer (which sits at a negative z-index inside the
+         same stacking context), hiding the image entirely. Inside the element
+         rather than above it: a layout must have a single root, and a comment
+         beside it is a second one. -->
     <!-- The header itself is transparent — it sits on the page rather than
          reading as a separate bar, and is not sticky (a transparent bar that
          stayed put would let content scroll visibly through the navigation).

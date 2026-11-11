@@ -26,13 +26,15 @@
     },
     {
       "name": "docs-preview",
-      "runtimeExecutable": "pnpm",
+      "runtimeExecutable": "python3",
       "runtimeArgs": [
-        "--filter",
-        "lokaltransfer-docs",
-        "preview",
-        "--port",
-        "4300"
+        "-m",
+        "http.server",
+        "4300",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        "docs/.output/public"
       ],
       "port": 4300,
       "autoPort": false

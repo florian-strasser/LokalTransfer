@@ -11,7 +11,7 @@ import {
   loadUpload,
   partPath
 } from '../../../../utils/uploads'
-import { cleanString, toPositiveInt } from '../../../../utils/validation'
+import { cleanFilename, cleanString, toPositiveInt } from '../../../../utils/validation'
 import { logger } from '../../../../utils/logger'
 
 // Announce a file that will arrive in pieces.
@@ -64,7 +64,7 @@ export default defineEventHandler(async (event) => {
     const storedName = generateStoredName()
     // The name is stored for display and for the download header, never used on
     // disk; the type is a hint from the client, echoed only as an attachment.
-    const filename = cleanString(body?.filename, 255) || 'file'
+    const filename = cleanFilename(body?.filename) || 'file'
     const mimeType = cleanString(body?.mimeType, 150) || 'application/octet-stream'
 
     await ensureTransferDir(transferId, event)

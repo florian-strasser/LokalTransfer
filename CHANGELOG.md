@@ -1,5 +1,40 @@
 # Changelog
 
+## v0.4.2
+
+### Security
+
+- **The image runs Node 22.23.5**, from this week's Node security release. It
+  updates Node's HTTP parser, which every LokalTransfer server uses, and fixes a
+  flaw that could leak another connection's memory into a response — that one
+  only where Node terminates TLS itself (`NITRO_SSL_CERT`) rather than a reverse
+  proxy. The many HTTP/2 fixes in the release do not concern LokalTransfer,
+  which serves HTTP/1.1. Running from source? Use Node 22.23.5 or later.
+
+- **A file name can no longer reach outside the folder a zip is extracted
+  into.** The API took a file's name as free text and used it unchanged as the
+  name of the file in the zip a recipient downloads, so a name like
+  `docs/../../.bashrc` would be written outside the chosen folder by an unzip
+  tool that does not guard against it — and guests can send files to the team.
+  Names are now reduced to the name alone when a file is uploaded, and again when
+  the zip is built, which covers names stored before this release.
+
+- **Nuxt 4.6.4**, for advisories on route rules, server islands, `javascript:`
+  links and its development server; **vue-i18n 11.4.18**, for a cross-site
+  scripting issue in parameter escaping; **nodemailer 10.5.0**, for three ways a
+  crafted address could be parsed wrongly; **zod 4.6.7**; and **undici 8.12.4**,
+  among others a TLS certificate validation bypass.
+
+- **Further fixed releases** of `node-forge`, `body-parser`, `@hono/node-server`,
+  `seroval`, `serialize-javascript`, `ip-address`, `fast-uri`, `qs`,
+  `fast-xml-parser` and `happy-dom`, and `glob` 14 and `minimatch` 11 for every
+  package still on an older line, as in LokalBoards. ESLint's import plugin
+  needed its 4.18 release for minimatch 11, which `@nuxt/eslint` 1.17 brings.
+
+- **The documentation site runs zod 4**, as LokalBoards' does: its content
+  module still asks for zod 3, which has no fixed release, and is given 4 by an
+  override.
+
 ## v0.4.1
 
 ### Security

@@ -7,6 +7,7 @@ import {
 } from '../../../utils/download'
 import { downloadLimiter, enforceRateLimit } from '../../../utils/rateLimit'
 import { resolveStoredFile, storedFileExists } from '../../../utils/storage'
+import { cleanFilename } from '../../../utils/validation'
 import { logger } from '../../../utils/logger'
 
 // Download an entire transfer as one zip.
@@ -104,7 +105,9 @@ export default defineEventHandler(async (event) => {
       continue
     }
 
-    archive.file(path, { name: uniqueName(file.filename) })
+    // Cleaned again here, not only on the way in: a name stored before that
+    // existed could still carry a path, and here it would become one.
+    archive.file(path, { name: uniqueName(cleanFilename(file.filename) || 'file') })
   }
 
   await recordDownload(transfer.id)
