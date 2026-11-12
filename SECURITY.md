@@ -1,0 +1,11 @@
+# Security Policy
+
+## Reporting a Vulnerability
+
+If you believe you have discovered a security issue within LokalTransfer, please open a new private security vulnerability report through https://github.com/florian-strasser/LokalTransfer/security/advisories/new. Alternatively, reach out to me directly over email: info@LokalTransfer.com. We will then open a [GitHub Security Advisory](https://github.com/florian-strasser/LokalTransfer/security/advisories) for tracking the fix on your
+behalf.
+
+We value the members of the independent security research community who find security vulnerabilities and work with us so that proper fixes can be issued to users. Our policy is to credit all researchers in the fix's release notes. In order to receive credit, security researchers must follow responsible disclosure practices, including:
+
+- They do not publish the vulnerability prior to the LokalTransfer team releasing a fix for it
+- They do not divulge exact details of the issue, for example, through exploits or proof-of-concepts
